@@ -5,4 +5,9 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>Universal Data Formatter (UDF) - Specification / API</name>
   <description>API for UDF providing abstractions over data handling</description>
+  
+  <properties>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+  </properties>
 </project>
