@@ -2,21 +2,14 @@ package app.views;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import app.controllers.MainStageController;
 import formatter.DataFormatter;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import manager.UDFManager;
 import models.Entity;
 
@@ -46,12 +39,7 @@ public class MainStage extends Stage implements MainStageView {
 	private void setupData() {
 		DataFormatter formatter = UDFManager.getFormatter();
 		entityTableView.getItems().clear();
-		
-		try {
-			entityTableView.getItems().addAll(formatter.read());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		entityTableView.getItems().addAll(formatter.getAllEntities());
 	}
 
 	public List<Entity> getTableEntities() {

@@ -17,15 +17,18 @@ public class FormatterImpl extends DataFormatter {
 
 	@Override
 	public void save(List<Entity> entities, File file) throws Exception {
-		File jsonFile = new File(file, "output.json");
-		new ObjectMapper().writeValue(jsonFile, entities);
+		new ObjectMapper().writeValue(file, entities);
 	}
 
 	@Override
 	public List<Entity> read(File file) throws Exception {
-		File jsonFile = new File(file, "output.json");
-		List<Entity> entities = new ObjectMapper().readValue(jsonFile, new TypeReference<List<Entity>>() {});
+		List<Entity> entities = new ObjectMapper().readValue(file, new TypeReference<List<Entity>>() {});
 
 		return entities;
+	}
+	
+	@Override
+	String getDataFormatExtension() {
+		return ".json";
 	}
 }

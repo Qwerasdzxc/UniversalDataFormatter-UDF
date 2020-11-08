@@ -1,0 +1,12 @@
+- id: 1
+  name: "Prvi"
+  attributes: null
+  children: null
+- id: 2
+  name: "Drugi"
+  attributes: null
+  children: null
+- id: 3
+  name: "Treci"
+  attributes: null
+  children: null

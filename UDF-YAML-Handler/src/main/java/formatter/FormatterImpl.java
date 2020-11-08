@@ -18,18 +18,21 @@ public class FormatterImpl extends DataFormatter {
 	}
 
 	@Override
-	public void save(List<Entity> entities, File folder) throws Exception {
-		File yamlFile = new File(folder, "output.yaml");
+	public void save(List<Entity> entities, File file) throws Exception {
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory().disable(Feature.WRITE_DOC_START_MARKER));
-		mapper.writeValue(yamlFile, entities);
+		mapper.writeValue(file, entities);
 	}
 
 	@Override
-	public List<Entity> read(File folder) throws Exception {
-		File yamlFile = new File(folder, "output.yaml");
+	public List<Entity> read(File file) throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-		List<Entity> entities = objectMapper.readValue(yamlFile, new TypeReference<List<Entity>>() {});
+		List<Entity> entities = objectMapper.readValue(file, new TypeReference<List<Entity>>() {});
 
 		return entities;
+	}
+
+	@Override
+	String getDataFormatExtension() {
+		return ".yaml";
 	}
 }
