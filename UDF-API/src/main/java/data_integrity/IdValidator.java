@@ -6,7 +6,7 @@ import models.Entity;
 
 public class IdValidator {
 
-	public int generateId(List<Entity> entities) {
+	public static int generateId(List<Entity> entities) {
 		int maxId = -1;
 		
 		for (Entity entity : entities) {
@@ -21,7 +21,7 @@ public class IdValidator {
 		return maxId + 1;
 	}
 	
-	public boolean verifyIdAvailable(int id, List<Entity> entities) {
+	public static boolean verifyIdAvailable(int id, List<Entity> entities) {
 		boolean available = true;
 		
 		for (Entity entity : entities) {

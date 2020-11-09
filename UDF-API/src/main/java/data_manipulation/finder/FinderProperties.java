@@ -1,0 +1,8 @@
+package data_manipulation.finder;
+
+public enum FinderProperties {
+	ID_EQUALS, 
+	NAME_EQUALS, NAME_STARTS_WITH, NAME_ENDS_WITH, 
+	CONTAINS_ATTRIBUTE_KEY, CONTAINS_CHILD_KEY,
+	ENTITY_CONTAINS_CHILD_KEY_WITH_VALUE
+}

@@ -1,9 +1,13 @@
 package app.views;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import app.controllers.MainStageController;
+import data_manipulation.finder.FinderProperties;
+import data_manipulation.finder.NestedEntityAttributeFinder;
 import formatter.DataFormatter;
 import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
@@ -40,6 +44,11 @@ public class MainStage extends Stage implements MainStageView {
 		DataFormatter formatter = UDFManager.getFormatter();
 		entityTableView.getItems().clear();
 		entityTableView.getItems().addAll(formatter.getAllEntities());
+		
+		Map<FinderProperties, Object> searchData = new HashMap<FinderProperties, Object>();
+		searchData.put(FinderProperties.ID_EQUALS, 1);
+		searchData.put(FinderProperties.NAME_STARTS_WITH, "Pr");
+		System.out.println(formatter.searchForEntities(searchData));
 	}
 
 	public List<Entity> getTableEntities() {
