@@ -6,14 +6,14 @@ import java.util.Map;
 
 import app.views.MainStageListener;
 import formatter.DataFormatter;
+import formatter.manager.UDFManager;
+import formatter.models.Entity;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
-import manager.UDFManager;
-import models.Entity;
 
 public class MainStageController {
 	

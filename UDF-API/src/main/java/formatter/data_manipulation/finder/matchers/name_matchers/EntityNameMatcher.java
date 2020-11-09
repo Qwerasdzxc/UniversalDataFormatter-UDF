@@ -1,6 +1,6 @@
-package data_manipulation.finder.matchers.name_matchers;
+package formatter.data_manipulation.finder.matchers.name_matchers;
 
-import data_manipulation.finder.EntityMatcher;
+import formatter.data_manipulation.finder.EntityMatcher;
 
 public abstract class EntityNameMatcher implements EntityMatcher {
 	

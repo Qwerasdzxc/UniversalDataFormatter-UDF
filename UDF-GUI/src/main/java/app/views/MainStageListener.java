@@ -2,7 +2,7 @@ package app.views;
 
 import java.util.List;
 
-import models.Entity;
+import formatter.models.Entity;
 
 public interface MainStageListener {
 	

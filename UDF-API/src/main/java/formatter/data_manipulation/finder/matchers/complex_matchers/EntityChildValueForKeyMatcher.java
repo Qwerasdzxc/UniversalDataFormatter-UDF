@@ -1,8 +1,8 @@
-package data_manipulation.finder.matchers.complex_matchers;
+package formatter.data_manipulation.finder.matchers.complex_matchers;
 
-import data_manipulation.finder.EntityMatcher;
-import data_manipulation.finder.NestedEntityAttributeFinder;
-import models.Entity;
+import formatter.data_manipulation.finder.EntityMatcher;
+import formatter.data_manipulation.finder.NestedEntityAttributeFinder;
+import formatter.models.Entity;
 
 public class EntityChildValueForKeyMatcher implements EntityMatcher {
 	

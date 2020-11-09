@@ -6,8 +6,8 @@ import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import manager.UDFManager;
-import models.Entity;
+import formatter.manager.UDFManager;
+import formatter.models.Entity;
 
 public class FormatterImpl extends DataFormatter {
 	

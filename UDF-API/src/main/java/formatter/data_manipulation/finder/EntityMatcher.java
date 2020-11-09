@@ -1,4 +1,4 @@
-package data_manipulation.finder;
+package formatter.data_manipulation.finder;
 
 public interface EntityMatcher {
 	

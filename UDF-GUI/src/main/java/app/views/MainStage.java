@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.controllers.MainStageController;
+import formatter.models.Entity;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -26,7 +27,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import models.Entity;
 
 public class MainStage extends Stage implements MainStageListener {
 	

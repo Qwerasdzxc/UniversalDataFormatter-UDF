@@ -1,8 +1,8 @@
-package data_integrity;
+package formatter.data_integrity;
 
 import java.util.List;
 
-import models.Entity;
+import formatter.models.Entity;
 
 public class IdValidator {
 

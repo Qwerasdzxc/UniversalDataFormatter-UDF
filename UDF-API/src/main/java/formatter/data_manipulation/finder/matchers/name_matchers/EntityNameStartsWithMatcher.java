@@ -1,4 +1,4 @@
-package data_manipulation.finder.matchers.name_matchers;
+package formatter.data_manipulation.finder.matchers.name_matchers;
 
 public class EntityNameStartsWithMatcher extends EntityNameMatcher {
 

@@ -1,16 +1,16 @@
-package data_manipulation.finder;
+package formatter.data_manipulation.finder;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import data_manipulation.finder.matchers.id_matchers.EntityIdMatcher;
-import data_manipulation.finder.matchers.key_matchers.EntityKeyExistsMatcher;
-import data_manipulation.finder.matchers.name_matchers.EntityNameEndsWithMatcher;
-import data_manipulation.finder.matchers.name_matchers.EntityNameEqualsMatcher;
-import data_manipulation.finder.matchers.name_matchers.EntityNameStartsWithMatcher;
 import formatter.DataFormatter;
-import models.Entity;
+import formatter.data_manipulation.finder.matchers.id_matchers.EntityIdMatcher;
+import formatter.data_manipulation.finder.matchers.key_matchers.EntityKeyExistsMatcher;
+import formatter.data_manipulation.finder.matchers.name_matchers.EntityNameEndsWithMatcher;
+import formatter.data_manipulation.finder.matchers.name_matchers.EntityNameEqualsMatcher;
+import formatter.data_manipulation.finder.matchers.name_matchers.EntityNameStartsWithMatcher;
+import formatter.models.Entity;
 
 public class EntityFinder {
 

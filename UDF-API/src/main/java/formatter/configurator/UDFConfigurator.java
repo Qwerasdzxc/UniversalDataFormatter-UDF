@@ -1,4 +1,4 @@
-package configurator;
+package formatter.configurator;
 
 public class UDFConfigurator {
 	

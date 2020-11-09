@@ -1,4 +1,4 @@
-package exceptions;
+package formatter.exceptions;
 
 @SuppressWarnings("serial")
 public class IllegalIdentifierException extends Exception {

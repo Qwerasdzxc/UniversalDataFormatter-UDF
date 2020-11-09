@@ -1,4 +1,4 @@
-package manager;
+package formatter.manager;
 
 import formatter.DataFormatter;
 

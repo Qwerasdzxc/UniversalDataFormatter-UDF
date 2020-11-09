@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import manager.UDFManager;
-import models.Entity;
+import formatter.manager.UDFManager;
+import formatter.models.Entity;
 
 public class FormatterImpl extends DataFormatter {
 

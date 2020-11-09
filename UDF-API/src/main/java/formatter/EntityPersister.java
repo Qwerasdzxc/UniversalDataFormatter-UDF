@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import configurator.UDFConfigurator;
-import data_integrity.IdValidator;
-import exceptions.IllegalIdentifierException;
-import models.Entity;
+import formatter.configurator.UDFConfigurator;
+import formatter.data_integrity.IdValidator;
+import formatter.exceptions.IllegalIdentifierException;
+import formatter.models.Entity;
 
 public class EntityPersister {
 
