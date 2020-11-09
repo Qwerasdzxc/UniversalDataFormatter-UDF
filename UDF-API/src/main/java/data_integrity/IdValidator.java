@@ -13,9 +13,11 @@ public class IdValidator {
 			if (entity.getId() > maxId)
 				maxId = entity.getId();
 			
-			for (Entity child : entity.getChildren().values())
-				if (child.getId() > maxId)
-					maxId = child.getId();
+			if (entity.getChildren() != null) {
+				for (Entity child : entity.getChildren().values())
+					if (child.getId() > maxId)
+						maxId = child.getId();
+			}
 		}
 		
 		return maxId + 1;
@@ -28,9 +30,11 @@ public class IdValidator {
 			if (entity.getId() == id)
 				available = false;
 			
-			for (Entity child : entity.getChildren().values())
-				if (child.getId() == id)
-					available = false;
+			if (entity.getChildren() != null) {
+				for (Entity child : entity.getChildren().values())
+					if (child.getId() == id)
+						available = false;
+			}
 		}
 		
 		return available;

@@ -7,17 +7,15 @@ import java.util.Map;
 
 import configurator.UDFConfigurator;
 import data_integrity.IdValidator;
-import data_manipulation.finder.EntityFinder;
-import data_manipulation.finder.FinderProperties;
 import exceptions.IllegalIdentifierException;
 import models.Entity;
 
-public abstract class DataFormatter {
+public class EntityPersister {
 
-	private EntityFinder finder;
+	private DataFormatter formatter;
 
-	public DataFormatter() {
-		this.finder = new EntityFinder(this);
+	public EntityPersister(DataFormatter formatter) {
+		this.formatter = formatter;
 	}
 
 	public boolean deleteEntity(Entity entityToDelete, boolean cascade) {
@@ -32,7 +30,7 @@ public abstract class DataFormatter {
 				break;
 			}
 		}
-			
+
 		entities.remove(entityToDelete);
 
 		try {
@@ -72,8 +70,8 @@ public abstract class DataFormatter {
 
 		for (int i = 0; i < fileCount; i++) {
 			try {
-				List<Entity> data = read(new File(savePath, "entities" + (i + 1) + getDataFormatExtension()));
-
+				List<Entity> data = formatter
+						.read(new File(savePath, "entities" + (i + 1) + formatter.getDataFormatExtension()));
 				entities.addAll(data);
 			} catch (Exception e) {
 				entities.addAll(new ArrayList<Entity>());
@@ -81,23 +79,6 @@ public abstract class DataFormatter {
 		}
 
 		return entities;
-	}
-
-	public List<Entity> searchForEntities(Map<FinderProperties, Object> searchData) {
-		return finder.getEntities(searchData);
-	}
-
-	public int getEntityLimitPerFile() {
-		return UDFConfigurator.getInstance().getEntityLimitPerFile();
-	}
-
-	public void setEntityLimitPerFile(int entityLimitPerFile) {
-		UDFConfigurator.getInstance().setEntityLimitPerFile(entityLimitPerFile);
-	}
-
-	public String getInfoText() {
-		return "Currently wokring with " + getDataFormatName() + " files using " + getDataFormatExtension()
-				+ " extension.";
 	}
 
 	private boolean verifyIdAvailable(int id) {
@@ -123,8 +104,9 @@ public abstract class DataFormatter {
 		int entityLimitPerFile = UDFConfigurator.getInstance().getEntityLimitPerFile();
 		for (int i = 0; i < entities.size(); i += entityLimitPerFile) {
 			int end = i + entityLimitPerFile;
-			save(entities.subList(i, end > entities.size() ? entities.size() : end), new File(
-					UDFConfigurator.getInstance().getSavePath(), "entities" + fileNumber + getDataFormatExtension()));
+			formatter.save(entities.subList(i, end > entities.size() ? entities.size() : end),
+					new File(UDFConfigurator.getInstance().getSavePath(),
+							"entities" + fileNumber + formatter.getDataFormatExtension()));
 
 			fileNumber++;
 		}
@@ -136,12 +118,4 @@ public abstract class DataFormatter {
 			if (!file.isDirectory())
 				file.delete();
 	}
-
-	abstract void save(List<Entity> entities, File file) throws Exception;
-
-	abstract List<Entity> read(File file) throws Exception;
-
-	abstract String getDataFormatExtension();
-
-	abstract String getDataFormatName();
 }

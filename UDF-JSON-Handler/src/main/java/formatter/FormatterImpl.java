@@ -28,6 +28,11 @@ public class FormatterImpl extends DataFormatter {
 	}
 	
 	@Override
+	String getDataFormatName() {
+		return "JSON";
+	}
+	
+	@Override
 	String getDataFormatExtension() {
 		return ".json";
 	}

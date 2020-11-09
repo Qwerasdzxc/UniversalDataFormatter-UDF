@@ -221,6 +221,11 @@ public class FormatterImpl extends DataFormatter {
 		}
 		return entities;
 	}
+	
+	@Override
+	String getDataFormatName() {
+		return "CUSTOM";
+	}
 
 	@Override
 	String getDataFormatExtension() {

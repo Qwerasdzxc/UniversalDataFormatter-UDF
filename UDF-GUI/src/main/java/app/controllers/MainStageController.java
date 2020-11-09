@@ -4,21 +4,56 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import app.views.MainStageView;
+import app.views.MainStageListener;
+import formatter.DataFormatter;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import manager.UDFManager;
 import models.Entity;
 
 public class MainStageController {
 	
-	private MainStageView view;
+	private DataFormatter formatter;
+	private MainStageListener view;
 	
-	public MainStageController(MainStageView view) {
+	public MainStageController(MainStageListener view) {
 		this.view = view;
+		this.formatter = UDFManager.getFormatter();
+		
+		refresh();
+	}
+	
+	public void onCreateEntityClicked() {
+		
+	}
+	
+	public void onCreateChildEntityClicked() {
+		
+	}
+	
+	public void onUpdateEntityClicked() {
+		
+	}
+	
+	public void deleteEntity(Entity entity, boolean cascade) {
+		formatter.deleteEntity(entity, cascade);
+		refresh();
+	}
+	
+	public void onDeleteEntitiesClicked() {
+		
+	}
+	
+	
+	public void onTableSelectionChanged() {
+		if (view.getSelectedEntities().size() > 1)
+			enableButtonsForMultipleSelection();
+		else
+			enableButtonsForSingleSelection();
 	}
 
 	public void populateCommonColumns(List<TableColumn<Entity, ?>> columns) {		
@@ -37,7 +72,6 @@ public class MainStageController {
 		List<String> childrenColumnNames = new ArrayList<String>();
 		
 		for (Entity entity : view.getTableEntities()) {
-			
 			if (entity.getAttributes() != null) {
 				for (Map.Entry<String, Object> entry : entity.getAttributes().entrySet()) {
 					final String key = entry.getKey();
@@ -59,7 +93,6 @@ public class MainStageController {
 					}
 				}
 			}
-			
 			if (entity.getChildren() != null) {
 				for (Map.Entry<String, Entity> entry : entity.getChildren().entrySet()) {
 					final String key = entry.getKey();
@@ -82,5 +115,50 @@ public class MainStageController {
 				}
 			}
 		}
+	}
+
+	public String getInfoText() {
+		return formatter.getInfoText();
+	}
+	
+	private void refresh() {
+		view.clearTable();
+		
+		List<Entity> data = formatter.getAllEntities();
+		List<Entity> children = new ArrayList<Entity>();
+
+		for (Entity entity : data) {
+			if (entity.getChildren() == null)
+				continue;
+
+			children.addAll(entity.getChildren().values());
+		}
+		data.addAll(children);
+		
+		view.addEntitiesToTable(data);
+		view.clearTableSelection();
+		
+		enableButtonsForNoSelection();
+	}
+	
+	private void enableButtonsForNoSelection() {
+		view.enableCreateChildButton(false);
+		view.enableUpdateButton(false);
+		view.enableDeleteButton(false);
+		view.enableDeleteMultipleButton(false);
+	}
+	
+	private void enableButtonsForSingleSelection() {
+		view.enableCreateChildButton(true);
+		view.enableUpdateButton(true);
+		view.enableDeleteButton(true);
+		view.enableDeleteMultipleButton(false);
+	}
+	
+	private void enableButtonsForMultipleSelection() {
+		view.enableCreateChildButton(false);
+		view.enableUpdateButton(false);
+		view.enableDeleteButton(false);
+		view.enableDeleteMultipleButton(true);
 	}
 }
