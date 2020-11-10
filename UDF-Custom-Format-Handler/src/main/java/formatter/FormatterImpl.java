@@ -32,7 +32,7 @@ public class FormatterImpl extends DataFormatter {
 			} else {
 				sb.append("\n");
 				for (Map.Entry<String, Object> at : ent.getAttributes().entrySet()) {
-					sb.append("\t#" + at.getKey() + ":" + at.getValue() + "\n");
+					sb.append("\t#" + at.getKey() + ": " + at.getValue() + "\n");
 				}
 			}
 			sb.append("@children:");
@@ -54,7 +54,7 @@ public class FormatterImpl extends DataFormatter {
 					} else {
 						sb.append("\n");
 						for (Map.Entry<String, Object> entValAt : entVal.getAttributes().entrySet()) {
-							sb.append("\t\t\t#" + entValAt.getKey() + ":" + entValAt.getValue() + "\n");
+							sb.append("\t\t\t#" + entValAt.getKey() + ": " + entValAt.getValue() + "\n");
 						}
 					}
 					sb.append("\t\t@children: null\n");
@@ -125,6 +125,7 @@ public class FormatterImpl extends DataFormatter {
 				}
 				if (data.startsWith("\t\t\t#")) {
 					String[] att = data.substring(4).split(":");
+					att[1] = att[1].substring(1);
 					if (att[1].equals("null"))
 						attributesForChild.put(att[0], null);
 					else {
@@ -162,16 +163,12 @@ public class FormatterImpl extends DataFormatter {
 					children.put(key, entForChild);
 					continue;
 				}
-				if (data.contains("#name: ")) {
-					String name = data.substring(7);
-					ent.setName(name);
-					continue;
-				}
 				if (data.contains("@attributes:")) {
 					continue;
 				}
 				if (data.startsWith("\t#")) {
 					String[] att = data.substring(2).split(":");
+					att[1] = att[1].substring(1);
 					if (att[1].equals("null"))
 						attributes.put(att[0], null);
 					else {
@@ -198,6 +195,11 @@ public class FormatterImpl extends DataFormatter {
 							}
 						}
 					}
+					continue;
+				}
+				if (data.contains("#name: ")) {
+					String name = data.substring(7);
+					ent.setName(name);
 					continue;
 				}
 				if (data.startsWith("@children:")) {
