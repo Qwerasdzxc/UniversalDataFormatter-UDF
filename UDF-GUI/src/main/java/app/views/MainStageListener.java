@@ -3,6 +3,8 @@ package app.views;
 import java.util.List;
 
 import formatter.models.Entity;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableColumn;
 
 public interface MainStageListener {
 	
@@ -23,4 +25,12 @@ public interface MainStageListener {
 	public void enableDeleteButton(boolean enable);
 	
 	public void enableDeleteMultipleButton(boolean enable);
+
+	public List<TableColumn<Entity, ?>> getTableColumns();
+	
+	public void setSortRadioButtons(List<RadioButton> radioButtons);
+	
+	public void populateColumns(List<TableColumn<Entity, ?>> columns);
+	
+	public void sortTableByColumn(TableColumn<Entity, ?> column);
 }

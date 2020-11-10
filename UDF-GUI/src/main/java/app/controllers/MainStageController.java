@@ -10,8 +10,11 @@ import formatter.manager.UDFManager;
 import formatter.models.Entity;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 
@@ -56,7 +59,8 @@ public class MainStageController {
 			enableButtonsForSingleSelection();
 	}
 
-	public void populateCommonColumns(List<TableColumn<Entity, ?>> columns) {		
+	public List<TableColumn<Entity, ?>> populateCommonColumns() {
+		List<TableColumn<Entity, ?>> columns = new ArrayList<TableColumn<Entity,?>>();
 		TableColumn<Entity, Integer> idCol = new TableColumn<Entity, Integer>("Id");
 		idCol.setCellValueFactory(new PropertyValueFactory<Entity, Integer>("id"));
 		
@@ -65,9 +69,13 @@ public class MainStageController {
 		
 		columns.add(idCol);
 		columns.add(nameCol);
+		
+		return columns;
 	}
 	
-	public void populateCustomColumns(List<TableColumn<Entity, ?>> columns) {		
+	public List<TableColumn<Entity, ?>> populateCustomColumns() {
+		List<TableColumn<Entity, ?>> columns = new ArrayList<TableColumn<Entity,?>>();
+		
 		List<String> attributeColumnNames = new ArrayList<String>();
 		List<String> childrenColumnNames = new ArrayList<String>();
 		
@@ -115,6 +123,39 @@ public class MainStageController {
 				}
 			}
 		}
+		return columns;
+	}
+	
+	public List<RadioButton> getSortRadioButtons() {
+		ToggleGroup group = new ToggleGroup();
+		
+		List<RadioButton> buttons = new ArrayList<RadioButton>();
+		List<TableColumn<Entity, ?>> columns = view.getTableColumns();
+		
+		for (final TableColumn<Entity, ?> column : columns) {
+			RadioButton button = new RadioButton();
+			button.setText(column.getText());
+			button.setUserData(column.getId());
+			button.setToggleGroup(group);
+			button.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			    public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected, Boolean isNowSelected) {
+			        if (isNowSelected) {
+			        	onSortTypeChanged(column);
+			        }
+			    }
+			});
+			
+			if (button.getText().equals("Id"))
+				button.setSelected(true);
+			
+			buttons.add(button);
+		}
+		
+		return buttons;
+	}
+	
+	public void onSortTypeChanged(TableColumn<Entity, ?> column) {
+		view.sortTableByColumn(column);
 	}
 
 	public String getInfoText() {
@@ -123,6 +164,7 @@ public class MainStageController {
 	
 	private void refresh() {
 		view.clearTable();
+		view.clearTableSelection();
 		
 		List<Entity> data = formatter.getAllEntities();
 		List<Entity> children = new ArrayList<Entity>();
@@ -136,9 +178,15 @@ public class MainStageController {
 		data.addAll(children);
 		
 		view.addEntitiesToTable(data);
-		view.clearTableSelection();
+		
+		List<TableColumn<Entity, ?>> columns = new ArrayList<TableColumn<Entity,?>>();
+		columns.addAll(populateCommonColumns());
+		columns.addAll(populateCustomColumns());
+		
+		view.populateColumns(columns);
 		
 		enableButtonsForNoSelection();
+		view.setSortRadioButtons(getSortRadioButtons());
 	}
 	
 	private void enableButtonsForNoSelection() {

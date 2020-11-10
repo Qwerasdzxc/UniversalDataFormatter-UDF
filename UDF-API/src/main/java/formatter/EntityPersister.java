@@ -21,8 +21,18 @@ public class EntityPersister {
 	public boolean deleteEntity(Entity entityToDelete, boolean cascade) {
 		List<Entity> entities = getAllEntities();
 
-		if (cascade)
-			entities.removeAll(entityToDelete.getChildren().values());
+		// Move children to the root level
+		if (!cascade && entityToDelete.getChildren() != null) {
+			List<Entity> children = new ArrayList<Entity>();
+
+			for (Entity entity : entities) {
+				if (entity.getChildren() == null)
+					continue;
+
+				children.addAll(entity.getChildren().values());
+			}
+			entities.addAll(children);
+		}
 
 		for (Entity entity : entities) {
 			if (entity.getChildren() != null && entity.getChildren().containsValue(entityToDelete)) {
@@ -66,7 +76,12 @@ public class EntityPersister {
 	public List<Entity> getAllEntities() {
 		List<Entity> entities = new ArrayList<Entity>();
 		String savePath = UDFConfigurator.getInstance().getSavePath();
-		int fileCount = new File(savePath).list().length;
+		String[] files = new File(savePath).list();
+		
+		if (files == null)
+			return entities;
+		
+		int fileCount = files.length;
 
 		for (int i = 0; i < fileCount; i++) {
 			try {

@@ -6,27 +6,31 @@ import formatter.models.Entity;
 
 public class EntityChildValueForKeyMatcher implements EntityMatcher {
 	
-	private Entity entity;
+	private Entity parent;
 	
 	private Object value;
 	
-	public EntityChildValueForKeyMatcher(Entity entity, Object value) {
-		this.entity = entity;
+	public EntityChildValueForKeyMatcher(Entity parent, Object value) {
+		this.parent = parent;
 		this.value = value;
 	}
 
 	@Override
 	public boolean matches() {
 		try {
+			if (parent.getChildren() == null)
+				return false;
+			
 			NestedEntityAttributeFinder data = (NestedEntityAttributeFinder) value;
+			Entity child = parent.getChildren().get(data.getParentKey());
 			
-			if (entity == null || entity.getAttributes() == null)
+			if (child == null || child.getAttributes() == null)
 				return false;
 			
-			if (!entity.getAttributes().containsKey(data.getChildAttributeKey()))
+			if (!child.getAttributes().containsKey(data.getChildAttributeKey()))
 				return false;
 			
-			return entity.getAttributes().get(data.getChildAttributeKey()).equals(data.getChildAttributeValue());
+			return child.getAttributes().get(data.getChildAttributeKey()).equals(data.getChildAttributeValue());
 		} catch (Exception e) {
 			return false;
 		}

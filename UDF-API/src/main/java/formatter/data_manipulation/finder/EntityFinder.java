@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import formatter.DataFormatter;
+import formatter.data_manipulation.finder.matchers.complex_matchers.EntityChildValueForKeyMatcher;
 import formatter.data_manipulation.finder.matchers.id_matchers.EntityIdMatcher;
 import formatter.data_manipulation.finder.matchers.key_matchers.EntityKeyExistsMatcher;
 import formatter.data_manipulation.finder.matchers.name_matchers.EntityNameEndsWithMatcher;
@@ -43,8 +44,8 @@ public class EntityFinder {
 			}
 
 			if (searchData.containsKey(FinderProperties.NAME_STARTS_WITH)) {
-				if (!new EntityNameStartsWithMatcher(entity.getName(), searchData.get(FinderProperties.NAME_STARTS_WITH))
-						.matches()) {
+				if (!new EntityNameStartsWithMatcher(entity.getName(),
+						searchData.get(FinderProperties.NAME_STARTS_WITH)).matches()) {
 					iterator.remove();
 					continue;
 				}
@@ -69,6 +70,14 @@ public class EntityFinder {
 			if (searchData.containsKey(FinderProperties.CONTAINS_CHILD_KEY)) {
 				if (entity.getChildren() == null || !new EntityKeyExistsMatcher(entity.getChildren().keySet(),
 						searchData.get(FinderProperties.CONTAINS_CHILD_KEY)).matches()) {
+					iterator.remove();
+					continue;
+				}
+			}
+
+			if (searchData.containsKey(FinderProperties.CONTAINS_CHILD_KEY_WITH_ATTRIBUTE_VALUE)) {
+				if (!new EntityChildValueForKeyMatcher(entity, searchData.get(FinderProperties.CONTAINS_CHILD_KEY))
+						.matches()) {
 					iterator.remove();
 					continue;
 				}
