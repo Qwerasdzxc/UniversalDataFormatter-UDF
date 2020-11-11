@@ -371,6 +371,13 @@ public class MainStage extends Stage implements MainStageListener {
 		entityTableView.getOnSort();
 		entityTableView.sort();
 	}
+	
+	public String getActiveSortColumnName() {
+		if (!entityTableView.getSortOrder().isEmpty())
+			return entityTableView.getSortOrder().get(0).getText();
+		else
+			return null;
+	}
 
 	public String getIdSearchText() {
 		return idSearchField.getText();

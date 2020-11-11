@@ -34,6 +34,8 @@ public interface MainStageListener {
 	
 	public void sortTableByColumn(TableColumn<Entity, ?> column);
 	
+	public String getActiveSortColumnName();
+	
 	public String getIdSearchText();
 	
 	public String getNameEqualsSearchText();

@@ -188,12 +188,13 @@ public class MainStageController {
 		return columns;
 	}
 
-	public List<RadioButton> getSortRadioButtons() {
+	public List<RadioButton> getSortRadioButtons(String activeSortColumnName) {
 		ToggleGroup group = new ToggleGroup();
 
 		List<RadioButton> buttons = new ArrayList<RadioButton>();
 		List<TableColumn<Entity, ?>> columns = view.getTableColumns();
-
+		boolean selectionSet = false;
+		
 		for (final TableColumn<Entity, ?> column : columns) {
 			RadioButton button = new RadioButton();
 			button.setText(column.getText());
@@ -208,12 +209,21 @@ public class MainStageController {
 				}
 			});
 
-			if (button.getText().equals("Id"))
+			// Try sorting by previous column
+			if (activeSortColumnName != null && button.getText().equals(activeSortColumnName)) {
 				button.setSelected(true);
+				selectionSet = true;
+			}
 
 			buttons.add(button);
 		}
-
+		
+		// Default sort by Id
+		if (!selectionSet)
+			for (final RadioButton button : buttons)
+				if (button.getText().equals("Id"))
+					button.setSelected(true);
+		
 		return buttons;
 	}
 
@@ -231,6 +241,8 @@ public class MainStageController {
 
 	private void refresh(List<Entity> data) {
 		Set<Entity> dataSet = new HashSet<Entity>(data);
+		String activeSortColumnName = view.getActiveSortColumnName();
+		
 		view.clearTable();
 		view.clearTableSelection();
 
@@ -253,7 +265,7 @@ public class MainStageController {
 		view.populateColumns(columns);
 
 		enableButtonsForNoSelection();
-		view.setSortRadioButtons(getSortRadioButtons());
+		view.setSortRadioButtons(getSortRadioButtons(activeSortColumnName));
 	}
 
 	private void enableButtonsForNoSelection() {
