@@ -1,10 +1,12 @@
 package formatter.data_manipulation.finder;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import formatter.DataFormatter;
+import formatter.data_manipulation.finder.matchers.attribute_matchers.EntityAttributeValueMatcher;
 import formatter.data_manipulation.finder.matchers.complex_matchers.EntityChildValueForKeyMatcher;
 import formatter.data_manipulation.finder.matchers.id_matchers.EntityIdMatcher;
 import formatter.data_manipulation.finder.matchers.key_matchers.EntityKeyExistsMatcher;
@@ -23,6 +25,16 @@ public class EntityFinder {
 
 	public List<Entity> getEntities(Map<FinderProperties, Object> searchData) {
 		List<Entity> entities = formatter.getAllEntities();
+		List<Entity> children = new ArrayList<Entity>();
+
+		for (Entity entity : entities) {
+			if (entity.getChildren() == null)
+				continue;
+
+			children.addAll(entity.getChildren().values());
+		}
+		entities.addAll(children);
+
 		Iterator<Entity> iterator = entities.iterator();
 
 		while (iterator.hasNext()) {
@@ -66,6 +78,14 @@ public class EntityFinder {
 					continue;
 				}
 			}
+			
+			if (searchData.containsKey(FinderProperties.CONTAINS_ATTRIBUTE_VALUE)) {
+				if (entity.getAttributes() == null || !new EntityAttributeValueMatcher(entity.getAttributes().values(),
+						searchData.get(FinderProperties.CONTAINS_ATTRIBUTE_VALUE)).matches()) {
+					iterator.remove();
+					continue;
+				}
+			}
 
 			if (searchData.containsKey(FinderProperties.CONTAINS_CHILD_KEY)) {
 				if (entity.getChildren() == null || !new EntityKeyExistsMatcher(entity.getChildren().keySet(),
@@ -76,8 +96,8 @@ public class EntityFinder {
 			}
 
 			if (searchData.containsKey(FinderProperties.CONTAINS_CHILD_KEY_WITH_ATTRIBUTE_VALUE)) {
-				if (!new EntityChildValueForKeyMatcher(entity, searchData.get(FinderProperties.CONTAINS_CHILD_KEY))
-						.matches()) {
+				if (!new EntityChildValueForKeyMatcher(entity,
+						searchData.get(FinderProperties.CONTAINS_CHILD_KEY_WITH_ATTRIBUTE_VALUE)).matches()) {
 					iterator.remove();
 					continue;
 				}

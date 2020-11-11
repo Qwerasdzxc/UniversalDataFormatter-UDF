@@ -66,9 +66,7 @@ public class FormatterImpl extends DataFormatter {
 			FileWriter myWriter = new FileWriter(file);
 			myWriter.write(sb.toString());
 			myWriter.close();
-			System.out.println("Successfully wrote to the file.");
 		} catch (IOException e) {
-			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
 	}
@@ -218,7 +216,6 @@ public class FormatterImpl extends DataFormatter {
 			}
 			myReader.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
 		return entities;

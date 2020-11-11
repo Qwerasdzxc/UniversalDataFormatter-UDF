@@ -33,4 +33,22 @@ public interface MainStageListener {
 	public void populateColumns(List<TableColumn<Entity, ?>> columns);
 	
 	public void sortTableByColumn(TableColumn<Entity, ?> column);
+	
+	public String getIdSearchText();
+	
+	public String getNameEqualsSearchText();
+	
+	public String getNameStartsWithSearchText();
+	
+	public String getNameEndsWithSearchText();
+	
+	public String getContainsAttributeKeySearchText();
+	
+	public String getContainsAttributeValueSearchText();
+	
+	public String getContainsChildKeyWithAttributeValuePartOneSearchText();
+	
+	public String getContainsChildKeyWithAttributeValuePartTwoSearchText();
+	
+	public String getContainsChildKeyWithAttributeValuePartThreeSearchText();
 }

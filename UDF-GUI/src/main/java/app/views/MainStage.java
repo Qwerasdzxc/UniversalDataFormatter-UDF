@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import app.controllers.MainStageController;
 import formatter.models.Entity;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -47,16 +48,17 @@ public class MainStage extends Stage implements MainStageListener {
 	
 	private VBox sortBar = new VBox(30);
 	
-	private CheckBox sortAscDescCheckBox = new CheckBox("Sort ascending");
+	private CheckBox sortAscDescCheckBox = new CheckBox("Sort descending");
 	
 	private TextField idSearchField = new TextField();
 	private TextField nameEqualsSearchField = new TextField();
 	private TextField nameStartsWithSearchField = new TextField();
 	private TextField nameEndsWithSearchField = new TextField();
 	private TextField containAttributeKeySearchField = new TextField();
-	private TextField containChildKeySearchField = new TextField();
+	private TextField containAttributeValueSearchField = new TextField();
 	private TextField containChildKeyWithAttributeValueSearchFieldPartOne = new TextField();
 	private TextField containChildKeyWithAttributeValueSearchFieldPartTwo = new TextField();
+	private TextField containChildKeyWithAttributeValueSearchFieldPartThree = new TextField();
 	
 	public MainStage() {
 		controller = new MainStageController(this);
@@ -142,38 +144,164 @@ public class MainStage extends Stage implements MainStageListener {
 		
 		TitledPane searchTitlePane = new TitledPane();
 		searchTitlePane.setText("Search");
-		searchTitlePane.setExpanded(false);
 		VBox topBar = new VBox(5);
 		HBox rowOne = new HBox(15);
 		rowOne.setPadding(new Insets(10, 10, 10, 10));
 		rowOne.getChildren().add(new Label("Id:"));
 		idSearchField.setPromptText("Entity id");
+		idSearchField.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	idSearchField.requestFocus();
+		            }
+		        });
+		    }
+		});
 		rowOne.getChildren().add(idSearchField);
 		rowOne.getChildren().add(new Label("Name equals:"));
 		nameEqualsSearchField.setPromptText("Entity name");
+		nameEqualsSearchField.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	nameEqualsSearchField.requestFocus();
+		            }
+		        });
+		    }
+		});
 		rowOne.getChildren().add(nameEqualsSearchField);
 		rowOne.getChildren().add(new Label("Name starts with:"));
 		nameStartsWithSearchField.setPromptText("Entity name");
 		rowOne.getChildren().add(nameStartsWithSearchField);
+		nameStartsWithSearchField.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	nameStartsWithSearchField.requestFocus();
+		            }
+		        });
+		    }
+		});
 		rowOne.getChildren().add(new Label("Name ends with:"));
 		nameEndsWithSearchField.setPromptText("Entity name");
+		nameEndsWithSearchField.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	nameEndsWithSearchField.requestFocus();
+		            }
+		        });
+		    }
+		});
 		rowOne.getChildren().add(nameEndsWithSearchField);
+
 		HBox rowTwo = new HBox(15);
 		rowTwo.setPadding(new Insets(10, 10, 10, 10));
 		rowTwo.getChildren().add(new Label("Contains attribute key:"));
 		containAttributeKeySearchField.setPromptText("Attribute key");
 		rowTwo.getChildren().add(containAttributeKeySearchField);
-		rowTwo.getChildren().add(new Label("Contains child key:"));
-		containChildKeySearchField.setPromptText("Child key");
-		rowTwo.getChildren().add(containChildKeySearchField);
-		rowTwo.getChildren().add(new Label("Contains child key with attribute value:"));
+		containAttributeKeySearchField.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	containAttributeKeySearchField.requestFocus();
+		            }
+		        });
+		    }
+		});
+		rowTwo.getChildren().add(new Label("Contains attribute value:"));
+		containAttributeValueSearchField.setPromptText("Attribute value");
+		containAttributeValueSearchField.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	containAttributeValueSearchField.requestFocus();
+		            }
+		        });
+		    }
+		});
+		rowTwo.getChildren().add(containAttributeValueSearchField);
+		
+		HBox rowThree = new HBox(15);
+		rowThree.setPadding(new Insets(10, 10, 10, 10));
+		rowThree.getChildren().add(new Label("Contains child key with attribute value:"));
 		containChildKeyWithAttributeValueSearchFieldPartOne.setPromptText("Child key");
-		rowTwo.getChildren().add(containChildKeyWithAttributeValueSearchFieldPartOne);
-		containChildKeyWithAttributeValueSearchFieldPartTwo.setPromptText("Child attribute value");
-		rowTwo.getChildren().add(containChildKeyWithAttributeValueSearchFieldPartTwo);
+		containChildKeyWithAttributeValueSearchFieldPartOne.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	containChildKeyWithAttributeValueSearchFieldPartOne.requestFocus();
+		            }
+		        });
+		    }
+		});
+		rowThree.getChildren().add(containChildKeyWithAttributeValueSearchFieldPartOne);
+		containChildKeyWithAttributeValueSearchFieldPartTwo.setPromptText("Nested child attribute key (optional)");
+		containChildKeyWithAttributeValueSearchFieldPartTwo.setMinWidth(220);
+		containChildKeyWithAttributeValueSearchFieldPartTwo.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	containChildKeyWithAttributeValueSearchFieldPartTwo.requestFocus();
+		            }
+		        });
+		    }
+		});
+		rowThree.getChildren().add(containChildKeyWithAttributeValueSearchFieldPartTwo);
+		containChildKeyWithAttributeValueSearchFieldPartThree.setPromptText("Nested child attribute value (optional)");
+		containChildKeyWithAttributeValueSearchFieldPartThree.setMinWidth(230);
+		containChildKeyWithAttributeValueSearchFieldPartThree.textProperty().addListener(new ChangeListener<String>() {
+		    public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+
+		        controller.onSearchQueryChanged();
+		        
+		        Platform.runLater(new Runnable() {
+		            public void run() {
+		            	containChildKeyWithAttributeValueSearchFieldPartThree.requestFocus();
+		            }
+		        });
+		    }
+		});
+		rowThree.getChildren().add(containChildKeyWithAttributeValueSearchFieldPartThree);
 		
 		topBar.getChildren().add(rowOne);
 		topBar.getChildren().add(rowTwo);
+		topBar.getChildren().add(rowThree);
+		
 		searchTitlePane.setContent(topBar);
 		borderPane.setTop(searchTitlePane);
 		
@@ -182,6 +310,8 @@ public class MainStage extends Stage implements MainStageListener {
 		setMinHeight(800);
 		setScene(scene);
 	}
+	
+	// Listener methods:
 	
 	public List<Entity> getTableEntities() {
 		return entityTableView.getItems();
@@ -236,9 +366,45 @@ public class MainStage extends Stage implements MainStageListener {
 	
 	public void sortTableByColumn(TableColumn<Entity, ?> column) {
 		entityTableView.getSortOrder().clear();
-		column.setSortType(sortAscDescCheckBox.isSelected() ? TableColumn.SortType.ASCENDING : TableColumn.SortType.DESCENDING);
+		column.setSortType(!sortAscDescCheckBox.isSelected() ? TableColumn.SortType.ASCENDING : TableColumn.SortType.DESCENDING);
 		entityTableView.getSortOrder().add(column);
 		entityTableView.getOnSort();
 		entityTableView.sort();
+	}
+
+	public String getIdSearchText() {
+		return idSearchField.getText();
+	}
+
+	public String getNameEqualsSearchText() {
+		return nameEqualsSearchField.getText();
+	}
+
+	public String getNameStartsWithSearchText() {
+		return nameStartsWithSearchField.getText();
+	}
+
+	public String getNameEndsWithSearchText() {
+		return nameEndsWithSearchField.getText();
+	}
+
+	public String getContainsAttributeKeySearchText() {
+		return containAttributeKeySearchField.getText();
+	}
+	
+	public String getContainsAttributeValueSearchText() {
+		return containAttributeValueSearchField.getText();
+	}
+
+	public String getContainsChildKeyWithAttributeValuePartOneSearchText() {
+		return containChildKeyWithAttributeValueSearchFieldPartOne.getText();
+	}
+
+	public String getContainsChildKeyWithAttributeValuePartTwoSearchText() {
+		return containChildKeyWithAttributeValueSearchFieldPartTwo.getText();
+	}
+
+	public String getContainsChildKeyWithAttributeValuePartThreeSearchText() {
+		return containChildKeyWithAttributeValueSearchFieldPartThree.getText();
 	}
 }

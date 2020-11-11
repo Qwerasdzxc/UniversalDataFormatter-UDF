@@ -4,9 +4,9 @@ import formatter.data_manipulation.finder.EntityMatcher;
 
 public class EntityIdMatcher implements EntityMatcher {
 	
-	protected int id; 
+	private int id; 
 	
-	protected Object other;
+	private Object other;
 
 	public EntityIdMatcher(int id, Object other) {
 		this.id = id;
@@ -16,7 +16,7 @@ public class EntityIdMatcher implements EntityMatcher {
 	@Override
 	public boolean matches() {
 		try {
-			int otherId = (int) other;
+			int otherId = Integer.parseInt((String) other);
 			return id == otherId;
 		} catch (Exception e) {
 			return false;

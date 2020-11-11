@@ -5,11 +5,11 @@ import formatter.data_manipulation.finder.NestedEntityAttributeFinder;
 import formatter.models.Entity;
 
 public class EntityChildValueForKeyMatcher implements EntityMatcher {
-	
+
 	private Entity parent;
-	
+
 	private Object value;
-	
+
 	public EntityChildValueForKeyMatcher(Entity parent, Object value) {
 		this.parent = parent;
 		this.value = value;
@@ -20,17 +20,18 @@ public class EntityChildValueForKeyMatcher implements EntityMatcher {
 		try {
 			if (parent.getChildren() == null)
 				return false;
-			
+
 			NestedEntityAttributeFinder data = (NestedEntityAttributeFinder) value;
 			Entity child = parent.getChildren().get(data.getParentKey());
-			
+
 			if (child == null || child.getAttributes() == null)
 				return false;
-			
+
 			if (!child.getAttributes().containsKey(data.getChildAttributeKey()))
 				return false;
-			
-			return child.getAttributes().get(data.getChildAttributeKey()).equals(data.getChildAttributeValue());
+
+			return child.getAttributes().get(data.getChildAttributeKey()).toString()
+					.equals(data.getChildAttributeValue().toString());
 		} catch (Exception e) {
 			return false;
 		}
