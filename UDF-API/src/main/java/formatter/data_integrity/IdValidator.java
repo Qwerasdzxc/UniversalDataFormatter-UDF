@@ -4,8 +4,16 @@ import java.util.List;
 
 import formatter.models.Entity;
 
+/**
+ * Validation of {@link formatter.models.Entity} unique identifiers
+ */
 public class IdValidator {
 
+	/**
+	 * <p>Returns new unique identifier based on existing {@link formatter.models.Entity}s</p>
+	 * @param entities	existing entities with unique identifiers set
+	 * @return id		unique identifier
+	 */
 	public static int generateId(List<Entity> entities) {
 		int maxId = -1;
 		
@@ -23,6 +31,13 @@ public class IdValidator {
 		return maxId + 1;
 	}
 	
+	/**
+	 * <p>Verifies that given unique identifier is really unique
+	 * based on existing {@link formatter.models.Entity}s</p>
+	 * @param id		unique identifier to verify
+	 * @param entities	existing entities with unique identifiers set
+	 * @return valid	unique identifier validity
+	 */
 	public static boolean verifyIdAvailable(int id, List<Entity> entities) {
 		boolean available = true;
 		

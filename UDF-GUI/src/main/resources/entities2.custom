@@ -1,0 +1,17 @@
+----------
+#id: 7
+#name: Child
+@attributes:
+	#ChildAttr: ChildAttrVal
+@children:
+	-ChildKey:
+		#id: 4
+		#name: ChildNew
+		@attributes:
+		@children: null
+----------
+#id: 4
+#name: ChildNew
+@attributes: null
+@children: null
+----------

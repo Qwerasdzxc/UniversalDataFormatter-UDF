@@ -15,3 +15,22 @@
 			#name: Luka
 		@children: null
 ----------
+#id: 2
+#name: Luka
+@attributes:
+	#a: b
+	#c: d
+@children: null
+----------
+#id: 6
+#name: Test
+@attributes:
+	#a: null
+@children:
+	-4:
+		#id: 7
+		#name: Child
+		@attributes:
+			#ChildAttr: ChildAttrVal
+		@children: null
+----------

@@ -188,7 +188,7 @@ public class FormatterImpl extends DataFormatter {
 									double at = Double.parseDouble(att[1]);
 									attributes.put(att[0], at);
 								} catch (Exception e3) {
-									attributes.put(att[0], att[1]); // string po default-u
+									attributes.put(att[0], att[1]);
 								}
 							}
 						}
@@ -222,12 +222,12 @@ public class FormatterImpl extends DataFormatter {
 	}
 	
 	@Override
-	String getDataFormatName() {
+	protected String getDataFormatName() {
 		return "CUSTOM";
 	}
 
 	@Override
-	String getDataFormatExtension() {
+	protected String getDataFormatExtension() {
 		return ".custom";
 	}
 }

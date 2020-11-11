@@ -32,12 +32,12 @@ public class FormatterImpl extends DataFormatter {
 	}
 	
 	@Override
-	String getDataFormatName() {
+	protected String getDataFormatName() {
 		return "YAML";
 	}
 
 	@Override
-	String getDataFormatExtension() {
+	protected String getDataFormatExtension() {
 		return ".yaml";
 	}
 }

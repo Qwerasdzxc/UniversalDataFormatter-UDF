@@ -5,19 +5,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import formatter.configurator.UDFConfigurator;
 import formatter.data_integrity.IdValidator;
 import formatter.exceptions.IllegalIdentifierException;
 import formatter.models.Entity;
 
-public class EntityPersister {
+/**
+ * Persister for doing CRUD operation on {@link formatter.models.Entity}s
+ */
+class EntityPersister {
 
+	/**
+	 * Active {@link formatter.DataFormatter}
+	 */
 	private DataFormatter formatter;
 
+	/**
+	 * Main constructor for initialization
+	 */
 	public EntityPersister(DataFormatter formatter) {
 		this.formatter = formatter;
 	}
 
+	/**
+	 * <p>Deletes the given {@link formatter.models.Entity} from storage</p>
+	 * @param entityToDelete 	entity for deletion
+	 * @param cascade	when cascade is active, all Entity's children will be deleted too
+	 * @return success	whether the operation succeeded
+	 */
 	public boolean deleteEntity(Entity entityToDelete, boolean cascade) {
 		List<Entity> entities = getAllEntities();
 
@@ -52,6 +66,14 @@ public class EntityPersister {
 		}
 	}
 
+	/**
+	 * <p>Creates an {@link formatter.models.Entity} from parameters and auto-generates unique identifier</p>
+	 * @param name			entity name
+	 * @param attributes	entity attributes, can be null
+	 * @param children		entity children, can be null
+	 * @return success		whether the operation succeeded
+	 * @throws Exception	error occurred during creation
+	 */
 	public Entity createEntity(String name, Map<String, Object> attributes, Map<String, Entity> children)
 			throws Exception {
 		Entity entity = new Entity(generateId(), name, attributes, children);
@@ -60,6 +82,15 @@ public class EntityPersister {
 		return entity;
 	}
 
+	/**
+	 * <p>Creates an {@link formatter.models.Entity} from parameters and checks unique identifier's validity</p>
+	 * @param id			entity unique identifier
+	 * @param name			entity name
+	 * @param attributes	entity attributes, can be null
+	 * @param children		entity children, can be null
+	 * @return success		whether the operation succeeded
+	 * @throws Exception	error occurred during creation
+	 */
 	public Entity createEntity(int id, String name, Map<String, Object> attributes, Map<String, Entity> children)
 			throws Exception {
 		boolean idValid = verifyIdAvailable(id);
@@ -72,7 +103,28 @@ public class EntityPersister {
 
 		return entity;
 	}
+	
+	/**
+	 * <p>Updates an existing {@link formatter.models.Entity}</p>
+	 * @param entity	updated entity instance
+	 * @throws Exception	error occurred during creation
+	 */
+	public void updateEntity(Entity entity) throws Exception {
+		List<Entity> entities = getAllEntities();
+		int indexToUpdate = 0;
+		for (int i = 0; i < entities.size(); i++) {
+			if (entities.get(i).getId() == entity.getId())
+				indexToUpdate = i;
+		}
+		
+		entities.set(indexToUpdate, entity);
+		saveAll(entities);
+	}
 
+	/**
+	 * <p>Returns all {@link formatter.models.Entity}s from storage</p>
+	 * @return entities	entities from storage
+	 */
 	public List<Entity> getAllEntities() {
 		List<Entity> entities = new ArrayList<Entity>();
 		String savePath = UDFConfigurator.getInstance().getSavePath();

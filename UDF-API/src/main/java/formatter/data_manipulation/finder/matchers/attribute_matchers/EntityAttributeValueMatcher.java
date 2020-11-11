@@ -6,12 +6,20 @@ import java.util.List;
 
 import formatter.data_manipulation.finder.EntityMatcher;
 
+/**
+ * Matcher for {@link formatter.models.Entity} attribute values
+ */
 public class EntityAttributeValueMatcher implements EntityMatcher {
 
 	private Collection<Object> values;
 
 	private Object value;
 
+	/**
+	 * Main constructor for initialization
+	 * @param values	entity attribute values
+	 * @param value		value for matching
+	 */
 	public EntityAttributeValueMatcher(Collection<Object> values, Object value) {
 		this.values = values;
 		this.value = value;

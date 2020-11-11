@@ -35,12 +35,44 @@ public class MainStageController {
 		refresh();
 	}
 
-	public void onCreateEntityClicked() {
-
+	public void onCreateEntityClicked(String id, String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
+		formatter.createEntity(id, name, attributes, children);
+		
+		refresh();
+	}
+	
+	public void onCreateEntityClicked(String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
+		formatter.createEntity(name, attributes, children);
+		
+		refresh();
 	}
 
-	public void onCreateChildEntityClicked() {
-
+	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String id, String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
+		Entity child = formatter.createEntity(id, name, attributes, children);
+		if (parent.getChildren() == null)
+			parent.setChildren(new HashMap<String, Entity>());
+		
+		if (parent.getChildren().containsKey(keyForChild))
+			throw new Exception();
+		
+		parent.getChildren().put(keyForChild, child);
+		formatter.updateEntity(parent);
+		
+		refresh();
+	}
+	
+	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
+		Entity child = formatter.createEntity(name, attributes, children);
+		if (parent.getChildren() == null)
+			parent.setChildren(new HashMap<String, Entity>());
+		
+		if (parent.getChildren().containsKey(keyForChild))
+			throw new Exception();
+		
+		parent.getChildren().put(keyForChild, child);
+		formatter.updateEntity(parent);
+		
+		refresh();
 	}
 
 	public void onUpdateEntityClicked() {
@@ -49,7 +81,7 @@ public class MainStageController {
 
 	public void deleteEntity(Entity entity, boolean cascade) {
 		formatter.deleteEntity(entity, cascade);
-		refresh();
+		onSearchQueryChanged();
 	}
 
 	public void onDeleteEntitiesClicked() {
@@ -233,6 +265,10 @@ public class MainStageController {
 
 	public String getInfoText() {
 		return formatter.getInfoText();
+	}
+	
+	public boolean showIdInputField() {
+		return !formatter.isAutoIncrementEnabled();
 	}
 
 	private void refresh() {

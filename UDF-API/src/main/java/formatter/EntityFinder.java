@@ -1,11 +1,11 @@
-package formatter.data_manipulation.finder;
+package formatter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import formatter.DataFormatter;
+import formatter.data_manipulation.finder.FinderProperties;
 import formatter.data_manipulation.finder.matchers.attribute_matchers.EntityAttributeValueMatcher;
 import formatter.data_manipulation.finder.matchers.complex_matchers.EntityChildValueForKeyMatcher;
 import formatter.data_manipulation.finder.matchers.id_matchers.EntityIdMatcher;
@@ -15,14 +15,29 @@ import formatter.data_manipulation.finder.matchers.name_matchers.EntityNameEqual
 import formatter.data_manipulation.finder.matchers.name_matchers.EntityNameStartsWithMatcher;
 import formatter.models.Entity;
 
-public class EntityFinder {
+/**
+ * Finder for {@link formatter.models.Entity} searching
+ */
+class EntityFinder {
 
+	/**
+	 * Active {@link formatter.DataFormatter}
+	 */
 	private DataFormatter formatter;
 
+	/**
+	 * Main constructor for initialization
+	 */
 	public EntityFinder(DataFormatter formatter) {
 		this.formatter = formatter;
 	}
 
+	/**
+	 * <p>Returns {@link formatter.models.Entity}s from storage that fulfill search requirements.
+	 * Use {@link formatter.data_manipulation.finder.FinderProperties} for search keys</p>
+	 * @param searchData	search information for making the query
+	 * @return entities		filtered entities from storage
+	 */
 	public List<Entity> getEntities(Map<FinderProperties, Object> searchData) {
 		List<Entity> entities = formatter.getAllEntities();
 		List<Entity> children = new ArrayList<Entity>();
