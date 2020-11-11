@@ -31,6 +31,33 @@ public class IdValidator {
 		return maxId + 1;
 	}
 	
+//	/**
+//	 * <p>Returns new unique identifier based on existing {@link formatter.models.Entity}s</p>
+//	 * @param entities		existing entities with unique identifiers set
+//	 * @param includeIds	unique identifiers which will be viewed as they are taken
+//	 * @return id			unique identifier
+//	 */
+//	public static int generateId(List<Entity> entities, List<Integer> includeIds) {
+//		int maxId = -1;
+//		
+//		for (Integer id : includeIds)
+//			if (id > maxId)
+//				maxId = id;
+//		
+//		for (Entity entity : entities) {
+//			if (entity.getId() > maxId)
+//				maxId = entity.getId();
+//			
+//			if (entity.getChildren() != null) {
+//				for (Entity child : entity.getChildren().values())
+//					if (child.getId() > maxId)
+//						maxId = child.getId();
+//			}
+//		}
+//		
+//		return maxId + 1;
+//	}
+	
 	/**
 	 * <p>Verifies that given unique identifier is really unique
 	 * based on existing {@link formatter.models.Entity}s</p>

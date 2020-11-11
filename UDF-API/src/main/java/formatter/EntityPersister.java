@@ -2,6 +2,7 @@ package formatter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +77,17 @@ class EntityPersister {
 	 */
 	public Entity createEntity(String name, Map<String, Object> attributes, Map<String, Entity> children)
 			throws Exception {
-		Entity entity = new Entity(generateId(), name, attributes, children);
+		int lastGeneratedId = generateId();
+		Entity entity = new Entity(lastGeneratedId, name, attributes, children);
+		
+		if (children != null) {
+			Collection<Entity> childrenEntities = children.values();
+			for (Entity child : childrenEntities) {
+				child.setId(lastGeneratedId + 1);
+				lastGeneratedId ++;
+			}
+		}
+		
 		save(entity);
 
 		return entity;
@@ -97,6 +108,14 @@ class EntityPersister {
 
 		if (!idValid)
 			throw new IllegalIdentifierException();
+		
+		if (children != null) {
+			Collection<Entity> childrenEntities = children.values();
+			for (Entity child : childrenEntities) {
+				if (child.getId() == id || !verifyIdAvailable(child.getId()))
+					throw new IllegalIdentifierException();
+			}
+		}
 
 		Entity entity = new Entity(id, name, attributes, children);
 		save(entity);

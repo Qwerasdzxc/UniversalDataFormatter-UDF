@@ -8,8 +8,10 @@ import java.util.Objects;
 * and its children entities
 */
 public class Entity {
+	
+	public static final int UNINITIALIZED_ID = -1;
 
-	private int id;
+	private int id = UNINITIALIZED_ID;
 
 	private String name;
 
@@ -30,6 +32,18 @@ public class Entity {
 	 */
 	public Entity(int id, String name, Map<String, Object> attributes, Map<String, Entity> children) {
 		this.id = id;
+		this.name = name;
+		this.attributes = attributes;
+		this.children = children;
+	}
+	
+	/**
+	 * Constructor without an unique identifier
+	 * @param name			name
+	 * @param attributes	attributes
+	 * @param children		children
+	 */
+	public Entity(String name, Map<String, Object> attributes, Map<String, Entity> children) {
 		this.name = name;
 		this.attributes = attributes;
 		this.children = children;

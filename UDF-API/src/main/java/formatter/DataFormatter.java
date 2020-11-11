@@ -52,6 +52,18 @@ public abstract class DataFormatter {
 			throws Exception {
 		return persister.createEntity(name, attributes, children);
 	}
+	
+	/**
+	 * <p>Creates an {@link formatter.models.Entity} from parameters and auto-generates unique identifier</p>
+	 * @param name			entity name
+	 * @param attributes	entity attributes, can be null
+	 * @return success		whether the operation succeeded
+	 * @throws Exception	error occurred during creation
+	 */
+	public Entity createEntity(String name, Map<String, Object> attributes)
+			throws Exception {
+		return persister.createEntity(name, attributes, null);
+	}
 
 	/**
 	 * <p>Creates an {@link formatter.models.Entity} from parameters and checks unique identifier's validity</p>
@@ -66,6 +78,20 @@ public abstract class DataFormatter {
 			throws Exception {
 		int parsedId = Integer.parseInt(id);
 		return persister.createEntity(parsedId, name, attributes, children);
+	}
+	
+	/**
+	 * <p>Creates an {@link formatter.models.Entity} from parameters and checks unique identifier's validity</p>
+	 * @param id			entity unique identifier
+	 * @param name			entity name
+	 * @param attributes	entity attributes, can be null
+	 * @return success		whether the operation succeeded
+	 * @throws Exception	error occurred during creation
+	 */
+	public Entity createEntity(String id, String name, Map<String, Object> attributes)
+			throws Exception {
+		int parsedId = Integer.parseInt(id);
+		return persister.createEntity(parsedId, name, attributes, null);
 	}
 	
 	/**

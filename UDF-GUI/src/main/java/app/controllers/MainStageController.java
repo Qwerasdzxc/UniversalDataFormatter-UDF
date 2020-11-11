@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import app.data_holder.ChildEntityDataHolder;
 import app.views.MainStageListener;
 import formatter.DataFormatter;
 import formatter.data_manipulation.finder.FinderProperties;
@@ -35,43 +36,67 @@ public class MainStageController {
 		refresh();
 	}
 
-	public void onCreateEntityClicked(String id, String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
-		formatter.createEntity(id, name, attributes, children);
-		
-		refresh();
-	}
-	
-	public void onCreateEntityClicked(String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
-		formatter.createEntity(name, attributes, children);
-		
+	public void onCreateEntityClicked(String id, String name, Map<String, Object> attributes) throws Exception {
+		formatter.createEntity(id, name, attributes);
+
 		refresh();
 	}
 
-	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String id, String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
+	public void onCreateEntityClicked(String name, Map<String, Object> attributes) throws Exception {
+		formatter.createEntity(name, attributes);
+
+		refresh();
+	}
+
+	public void onCreateEntityClicked(String id, String name, Map<String, Object> attributes,
+			List<ChildEntityDataHolder> childEntities) throws Exception {
+		Map<String, Entity> children = new HashMap<String, Entity>();
+		for (ChildEntityDataHolder child : childEntities)
+			children.put(child.getChildKey(), new Entity(Integer.parseInt(child.getId()), child.getName(), null, null));
+
+		formatter.createEntity(id, name, attributes, children);
+
+		refresh();
+	}
+
+	public void onCreateEntityClicked(String name, Map<String, Object> attributes,
+			List<ChildEntityDataHolder> childEntities) throws Exception {
+		Map<String, Entity> children = new HashMap<String, Entity>();
+		for (ChildEntityDataHolder child : childEntities)
+			children.put(child.getChildKey(), new Entity(child.getName(), null, null));
+		
+		formatter.createEntity(name, attributes, children);
+
+		refresh();
+	}
+
+	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String id, String name,
+			Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
 		Entity child = formatter.createEntity(id, name, attributes, children);
 		if (parent.getChildren() == null)
 			parent.setChildren(new HashMap<String, Entity>());
-		
+
 		if (parent.getChildren().containsKey(keyForChild))
 			throw new Exception();
-		
+
 		parent.getChildren().put(keyForChild, child);
 		formatter.updateEntity(parent);
-		
+
 		refresh();
 	}
-	
-	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String name, Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
+
+	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String name,
+			Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
 		Entity child = formatter.createEntity(name, attributes, children);
 		if (parent.getChildren() == null)
 			parent.setChildren(new HashMap<String, Entity>());
-		
+
 		if (parent.getChildren().containsKey(keyForChild))
 			throw new Exception();
-		
+
 		parent.getChildren().put(keyForChild, child);
 		formatter.updateEntity(parent);
-		
+
 		refresh();
 	}
 
@@ -91,8 +116,16 @@ public class MainStageController {
 	public void onTableSelectionChanged() {
 		if (view.getSelectedEntities().size() > 1)
 			enableButtonsForMultipleSelection();
-		else
-			enableButtonsForSingleSelection();
+		else {
+			Entity selected = view.getSelectedEntities().get(0);
+			List<Entity> entities = formatter.getAllEntities();
+			boolean isAChild = false;
+			for (Entity entity : entities)
+				if (entity.getChildren() != null && entity.getChildren().values().contains(selected))
+					isAChild = true;
+			
+			enableButtonsForSingleSelection(!isAChild);
+		}
 	}
 
 	public void onSearchQueryChanged() {
@@ -117,7 +150,7 @@ public class MainStageController {
 		String containsAttributeKeySearchText = view.getContainsAttributeKeySearchText();
 		if (!containsAttributeKeySearchText.isBlank())
 			searchMap.put(FinderProperties.CONTAINS_ATTRIBUTE_KEY, containsAttributeKeySearchText);
-		
+
 		String containsAttributeValueSearchText = view.getContainsAttributeValueSearchText();
 		if (!containsAttributeValueSearchText.isBlank())
 			searchMap.put(FinderProperties.CONTAINS_ATTRIBUTE_VALUE, containsAttributeValueSearchText);
@@ -226,7 +259,7 @@ public class MainStageController {
 		List<RadioButton> buttons = new ArrayList<RadioButton>();
 		List<TableColumn<Entity, ?>> columns = view.getTableColumns();
 		boolean selectionSet = false;
-		
+
 		for (final TableColumn<Entity, ?> column : columns) {
 			RadioButton button = new RadioButton();
 			button.setText(column.getText());
@@ -249,13 +282,13 @@ public class MainStageController {
 
 			buttons.add(button);
 		}
-		
+
 		// Default sort by Id
 		if (!selectionSet)
 			for (final RadioButton button : buttons)
 				if (button.getText().equals("Id"))
 					button.setSelected(true);
-		
+
 		return buttons;
 	}
 
@@ -266,7 +299,7 @@ public class MainStageController {
 	public String getInfoText() {
 		return formatter.getInfoText();
 	}
-	
+
 	public boolean showIdInputField() {
 		return !formatter.isAutoIncrementEnabled();
 	}
@@ -278,7 +311,7 @@ public class MainStageController {
 	private void refresh(List<Entity> data) {
 		Set<Entity> dataSet = new HashSet<Entity>(data);
 		String activeSortColumnName = view.getActiveSortColumnName();
-		
+
 		view.clearTable();
 		view.clearTableSelection();
 
@@ -311,8 +344,8 @@ public class MainStageController {
 		view.enableDeleteMultipleButton(false);
 	}
 
-	private void enableButtonsForSingleSelection() {
-		view.enableCreateChildButton(true);
+	private void enableButtonsForSingleSelection(boolean enableChildCreation) {
+		view.enableCreateChildButton(enableChildCreation);
 		view.enableUpdateButton(true);
 		view.enableDeleteButton(true);
 		view.enableDeleteMultipleButton(false);

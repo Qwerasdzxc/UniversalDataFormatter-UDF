@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.controllers.MainStageController;
+import app.data_holder.ChildEntityDataHolder;
 import formatter.models.Entity;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -101,7 +102,7 @@ public class MainStage extends Stage implements MainStageListener {
 			}
 		});
 		;
-		
+
 		createChildEntityButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				showCreateChildEntityDialog();
@@ -321,7 +322,7 @@ public class MainStage extends Stage implements MainStageListener {
 		setMinHeight(800);
 		setScene(scene);
 	}
-	
+
 	private void showErrorAlert(String message) {
 		final Alert errorAlert = new Alert(AlertType.ERROR);
 		errorAlert.setTitle("Error");
@@ -329,7 +330,7 @@ public class MainStage extends Stage implements MainStageListener {
 
 		errorAlert.show();
 	}
-	
+
 	private void showCreateEntityDialog() {
 		final Alert alert = new Alert(AlertType.INFORMATION);
 		alert.getDialogPane().setMaxHeight(600);
@@ -377,7 +378,7 @@ public class MainStage extends Stage implements MainStageListener {
 				alert.getDialogPane().getScene().getWindow().sizeToScene();
 			}
 		});
-		
+
 		final VBox childrenContent = new VBox(15);
 		HBox rowThree = new HBox();
 		Button newChildButton = new Button("New child");
@@ -386,13 +387,20 @@ public class MainStage extends Stage implements MainStageListener {
 
 		final List<TextField> childIdTextFields = new ArrayList<TextField>();
 		final List<TextField> childNameTextFields = new ArrayList<TextField>();
+		final List<TextField> childKeyTextFields = new ArrayList<TextField>();
 		newChildButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				HBox newRow = new HBox(10);
-				newRow.getChildren().add(new Label("Id:"));
-				TextField idField = new TextField();
-				childIdTextFields.add(idField);
-				newRow.getChildren().add(idField);
+				TextField keyField = new TextField();
+				childKeyTextFields.add(keyField);
+				newRow.getChildren().add(new Label("Key:"));
+				newRow.getChildren().add(keyField);
+				if (controller.showIdInputField()) {
+					newRow.getChildren().add(new Label("Id:"));
+					TextField idField = new TextField();
+					childIdTextFields.add(idField);
+					newRow.getChildren().add(idField);
+				}
 				TextField nameField = new TextField();
 				childNameTextFields.add(nameField);
 				newRow.getChildren().add(new Label("Name:"));
@@ -402,7 +410,7 @@ public class MainStage extends Stage implements MainStageListener {
 				alert.getDialogPane().getScene().getWindow().sizeToScene();
 			}
 		});
-		
+
 		content.getChildren().add(new Label("Attributes:"));
 		content.getChildren().add(newAttributeButton);
 		content.getChildren().add(attributeContent);
@@ -420,23 +428,39 @@ public class MainStage extends Stage implements MainStageListener {
 			for (int i = 0; i < attributeKeyTextFields.size(); i++) {
 				String value = attributeValueTextFields.get(i).getText();
 				if (!attributeKeyTextFields.get(i).getText().isBlank()) {
-					attributes.put(attributeKeyTextFields.get(i).getText(),
-							value.isBlank() ? null : value);
+					attributes.put(attributeKeyTextFields.get(i).getText(), value.isBlank() ? null : value);
+				}
+			}
+			List<ChildEntityDataHolder> childEntities = new ArrayList<ChildEntityDataHolder>();
+			for (int i = 0; i < childNameTextFields.size(); i++) {
+				if (!childKeyTextFields.get(i).getText().isBlank() && !childNameTextFields.get(i).getText().isBlank()) {
+					childEntities.add(new ChildEntityDataHolder(childKeyTextFields.get(i).getText(),
+							childIdTextFields.size() > i ? childIdTextFields.get(i).getText() : "", childNameTextFields.get(i).getText()));
 				}
 			}
 
 			try {
-				if (idTextField.getText().isBlank())
-					controller.onCreateEntityClicked(nameTextField.getText(), attributes, null);
-				else
-					controller.onCreateEntityClicked(idTextField.getText(), nameTextField.getText(), attributes,
-							null);
+				if (!controller.showIdInputField()) {
+					if (childEntities.isEmpty())
+						controller.onCreateEntityClicked(nameTextField.getText(),
+								attributes.isEmpty() ? null : attributes);
+					else
+						controller.onCreateEntityClicked(nameTextField.getText(),
+								attributes.isEmpty() ? null : attributes, childEntities);
+				} else {
+					if (childEntities.isEmpty())
+						controller.onCreateEntityClicked(idTextField.getText(), nameTextField.getText(),
+								attributes.isEmpty() ? null : attributes);
+					else
+						controller.onCreateEntityClicked(idTextField.getText(), nameTextField.getText(),
+								attributes.isEmpty() ? null : attributes, childEntities);
+				}
 			} catch (Exception e) {
 				showErrorAlert("Error creating entity");
 			}
 		}
 	}
-	
+
 	private void showCreateChildEntityDialog() {
 		final Alert alert = new Alert(AlertType.INFORMATION);
 		alert.getDialogPane().setMaxHeight(600);
@@ -504,17 +528,17 @@ public class MainStage extends Stage implements MainStageListener {
 			for (int i = 0; i < attributeKeyTextFields.size(); i++) {
 				String value = attributeValueTextFields.get(i).getText();
 				if (!attributeKeyTextFields.get(i).getText().isBlank()) {
-					attributes.put(attributeKeyTextFields.get(i).getText(),
-							value.isBlank() ? null : value);
+					attributes.put(attributeKeyTextFields.get(i).getText(), value.isBlank() ? null : value);
 				}
 			}
 
 			try {
 				if (idTextField.getText().isBlank())
-					controller.onCreateChildEntityClicked(parent, keyForChildTextField.getText(), nameTextField.getText(), attributes, null);
+					controller.onCreateChildEntityClicked(parent, keyForChildTextField.getText(),
+							nameTextField.getText(), attributes, null);
 				else
-					controller.onCreateChildEntityClicked(parent, keyForChildTextField.getText(), idTextField.getText(), nameTextField.getText(), attributes,
-							null);
+					controller.onCreateChildEntityClicked(parent, keyForChildTextField.getText(), idTextField.getText(),
+							nameTextField.getText(), attributes, null);
 			} catch (Exception e) {
 				showErrorAlert("Error creating child entity");
 			}

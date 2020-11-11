@@ -11,7 +11,7 @@ class UDFConfigurator {
 	
 	private int entityLimitPerFile = 3;
 	
-	private boolean autoIncrementIds = false;
+	private boolean autoIncrementIds = true;
 	
 	/**
 	 * <p>Returns storage location of stored {@link formatter.models.Entity}s</p>
