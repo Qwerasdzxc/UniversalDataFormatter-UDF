@@ -1,7 +1,8 @@
 ----------
-#id: 1
-#name: Child
+#id: 0
+#name: a
 @attributes:
-	#a: b
+	#b: c
+	#d: e
 @children: null
 ----------

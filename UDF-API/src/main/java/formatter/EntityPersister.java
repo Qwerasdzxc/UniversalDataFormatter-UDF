@@ -20,7 +20,7 @@ class EntityPersister {
 	 * Active {@link formatter.DataFormatter}
 	 */
 	private DataFormatter formatter;
-	
+
 	/**
 	 * Configuration for {@link formatter.DataFormatter}
 	 */
@@ -35,10 +35,14 @@ class EntityPersister {
 	}
 
 	/**
-	 * <p>Deletes the given {@link formatter.models.Entity} from storage</p>
-	 * @param entityToDelete 	entity for deletion
-	 * @param cascade	when cascade is active, all Entity's children will be deleted too
-	 * @return success	whether the operation succeeded
+	 * <p>
+	 * Deletes the given {@link formatter.models.Entity} from storage
+	 * </p>
+	 * 
+	 * @param entityToDelete entity for deletion
+	 * @param cascade        when cascade is active, all Entity's children will be
+	 *                       deleted too
+	 * @return success whether the operation succeeded
 	 */
 	public boolean deleteEntity(Entity entityToDelete, boolean cascade) {
 		List<Entity> entities = getAllEntities();
@@ -61,10 +65,10 @@ class EntityPersister {
 		for (Entity entity : entities) {
 			if (entity.getChildren() != null && entity.getChildren().containsValue(entityToDelete)) {
 				entity.getChildren().values().remove(entityToDelete);
-				
+
 				if (entity.getChildren().values().isEmpty())
 					entity.setChildren(null);
-				
+
 				break;
 			}
 		}
@@ -79,48 +83,52 @@ class EntityPersister {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * <p>Deletes the given {@link formatter.models.Entity} from storage</p>
-	 * @param entitiesToDelete 	entities for deletion
-	 * @param cascade	when cascade is active, all Entity's children will be deleted too
-	 * @return success	whether the operation succeeded
+	 * <p>
+	 * Deletes the given {@link formatter.models.Entity} from storage
+	 * </p>
+	 * 
+	 * @param entitiesToDelete entities for deletion
+	 * @param cascade          when cascade is active, all Entity's children will be
+	 *                         deleted too
+	 * @return success whether the operation succeeded
 	 */
 	public boolean deleteEntities(List<Entity> entitiesToDelete, boolean cascade) {
 		List<Entity> entities = getAllEntities();
 		List<Entity> children = new ArrayList<Entity>();
-		
+
 		// Move children to the root level
 		if (!cascade) {
 			for (Entity entity : entities) {
 				for (Entity forDelete : entitiesToDelete) {
 					if (entity.getId() != forDelete.getId() || entity.getChildren() == null)
 						continue;
-		
+
 					for (Entity child : entity.getChildren().values())
 						children.add(child);
 				}
 			}
 			entities.addAll(children);
 		}
-		
+
 		// Removes child entities
 		for (Entity entity : entities) {
 			for (Entity forDelete : entitiesToDelete) {
 				if (entity.getChildren() != null && entity.getChildren().containsValue(forDelete)) {
 					entity.getChildren().values().remove(forDelete);
-					
+
 					if (entity.getChildren().values().isEmpty())
 						entity.setChildren(null);
 				}
 			}
 		}
-		
+
 		// Remove parent entities
 		Iterator<Entity> iterator = entities.iterator();
 		while (iterator.hasNext()) {
 			Entity entity = iterator.next();
-			
+
 			if (entitiesToDelete.contains(entity))
 				iterator.remove();
 		}
@@ -135,39 +143,47 @@ class EntityPersister {
 	}
 
 	/**
-	 * <p>Creates an {@link formatter.models.Entity} from parameters and auto-generates unique identifier</p>
-	 * @param name			entity name
-	 * @param attributes	entity attributes, can be null
-	 * @param children		entity children, can be null
-	 * @return success		whether the operation succeeded
-	 * @throws Exception	error occurred during creation
+	 * <p>
+	 * Creates an {@link formatter.models.Entity} from parameters and auto-generates
+	 * unique identifier
+	 * </p>
+	 * 
+	 * @param name       entity name
+	 * @param attributes entity attributes, can be null
+	 * @param children   entity children, can be null
+	 * @return success whether the operation succeeded
+	 * @throws Exception error occurred during creation
 	 */
 	public Entity createEntity(String name, Map<String, Object> attributes, Map<String, Entity> children)
 			throws Exception {
 		int lastGeneratedId = generateId();
 		Entity entity = new Entity(lastGeneratedId, name, attributes, children);
-		
+
 		if (children != null) {
 			Collection<Entity> childrenEntities = children.values();
 			for (Entity child : childrenEntities) {
 				child.setId(lastGeneratedId + 1);
-				lastGeneratedId ++;
+				lastGeneratedId++;
 			}
 		}
-		
+
 		save(entity);
 
 		return entity;
 	}
 
 	/**
-	 * <p>Creates an {@link formatter.models.Entity} from parameters and checks unique identifier's validity</p>
-	 * @param id			entity unique identifier
-	 * @param name			entity name
-	 * @param attributes	entity attributes, can be null
-	 * @param children		entity children, can be null
-	 * @return success		whether the operation succeeded
-	 * @throws Exception	error occurred during creation
+	 * <p>
+	 * Creates an {@link formatter.models.Entity} from parameters and checks unique
+	 * identifier's validity
+	 * </p>
+	 * 
+	 * @param id         entity unique identifier
+	 * @param name       entity name
+	 * @param attributes entity attributes, can be null
+	 * @param children   entity children, can be null
+	 * @return success whether the operation succeeded
+	 * @throws Exception error occurred during creation
 	 */
 	public Entity createEntity(int id, String name, Map<String, Object> attributes, Map<String, Entity> children)
 			throws Exception {
@@ -175,7 +191,7 @@ class EntityPersister {
 
 		if (!idValid)
 			throw new IllegalIdentifierException();
-		
+
 		if (children != null) {
 			Collection<Entity> childrenEntities = children.values();
 			for (Entity child : childrenEntities) {
@@ -189,16 +205,20 @@ class EntityPersister {
 
 		return entity;
 	}
-	
+
 	/**
-	 * <p>Updates an existing {@link formatter.models.Entity}</p>
-	 * @param entity			updated entity instance
-	 * @param addingChildren	new children have been added and id validity must be done	
-	 * @throws Exception		error occurred during creation
+	 * <p>
+	 * Updates an existing {@link formatter.models.Entity}
+	 * </p>
+	 * 
+	 * @param entity         updated entity instance
+	 * @param addingChildren new children have been added and id validity must be
+	 *                       done
+	 * @throws Exception error occurred during creation
 	 */
 	public void updateEntity(Entity entity, boolean addingChildren) throws Exception {
 		List<Entity> entities = getAllEntities();
-		int indexToUpdate = 0;
+		int indexToUpdate = -1;
 		for (int i = 0; i < entities.size(); i++) {
 			if (entities.get(i).getId() == entity.getId()) {
 				if (addingChildren && entity.getChildren() != null) {
@@ -207,7 +227,7 @@ class EntityPersister {
 						int lastGeneratedId = generateId();
 						for (Entity child : childrenEntities) {
 							child.setId(lastGeneratedId);
-							lastGeneratedId ++;
+							lastGeneratedId++;
 						}
 					} else {
 						Collection<Entity> childrenEntities = entity.getChildren().values();
@@ -223,14 +243,34 @@ class EntityPersister {
 				indexToUpdate = i;
 			}
 		}
-		
-		entities.set(indexToUpdate, entity);
+		// It's not a parent
+		if (indexToUpdate == -1) {
+			Entity parent = null;
+			String childKey = null;
+			for (Entity e : entities) {
+				if (e.getChildren() != null) {
+					for (Map.Entry<String, Entity> entry : e.getChildren().entrySet()) {
+						if (entry.getValue().equals(entity)) {
+							childKey = entry.getKey();
+							parent = e;
+						}
+					}
+				}
+			}
+
+			parent.getChildren().put(childKey, entity);
+		} else {
+			entities.set(indexToUpdate, entity);
+		}
 		saveAll(entities);
 	}
 
 	/**
-	 * <p>Returns all {@link formatter.models.Entity}s from storage</p>
-	 * @return entities	entities from storage
+	 * <p>
+	 * Returns all {@link formatter.models.Entity}s from storage
+	 * </p>
+	 * 
+	 * @return entities entities from storage
 	 */
 	public List<Entity> getAllEntities() {
 		List<Entity> entities = new ArrayList<Entity>();
@@ -239,14 +279,14 @@ class EntityPersister {
 		int ignoreFileNumber = 0;
 		for (String file : files) {
 			if (file.contains(".DS_Store"))
-				ignoreFileNumber ++;
+				ignoreFileNumber++;
 			if (file.contains("application.properties"))
-				ignoreFileNumber ++;
+				ignoreFileNumber++;
 		}
-		
+
 		if (files == null)
 			return entities;
-		
+
 		// Ignore properties file
 		int fileCount = files.length - ignoreFileNumber;
 
@@ -286,9 +326,8 @@ class EntityPersister {
 		int entityLimitPerFile = configurator.getEntityLimitPerFile();
 		for (int i = 0; i < entities.size(); i += entityLimitPerFile) {
 			int end = i + entityLimitPerFile;
-			formatter.save(entities.subList(i, end > entities.size() ? entities.size() : end),
-					new File(configurator.getStoragePath(),
-							"entities" + fileNumber + formatter.getDataFormatExtension()));
+			formatter.save(entities.subList(i, end > entities.size() ? entities.size() : end), new File(
+					configurator.getStoragePath(), "entities" + fileNumber + formatter.getDataFormatExtension()));
 
 			fileNumber++;
 		}

@@ -696,7 +696,8 @@ public class MainStage extends Stage implements MainStageListener {
 				controller.onUpdateEntityClicked(selected, nameTextField.getText(),
 						attributes.isEmpty() ? null : attributes, deletedChildrenIds);
 			} catch (Exception e) {
-				showErrorAlert("Error creating child entity");
+				e.printStackTrace();
+				showErrorAlert("Error updating entity");
 			}
 		}
 	}
