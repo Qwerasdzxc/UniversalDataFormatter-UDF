@@ -92,7 +92,25 @@ public class MainStage extends Stage implements MainStageListener {
 				Optional<ButtonType> result = alert.showAndWait();
 
 				if ((result.isPresent()) && (result.get() == ButtonType.OK))
-					controller.deleteEntity(selected, cascadeDeleteCheckBox.isSelected());
+					controller.onDeleteEntityClicked(selected, cascadeDeleteCheckBox.isSelected());
+			}
+		});
+
+		deleteEntitiesButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				List<Entity> selected = getSelectedEntities();
+
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Confirm");
+				alert.setHeaderText("Delete selected Entities?");
+
+				CheckBox cascadeDeleteCheckBox = new CheckBox("Cascade delete children?");
+				alert.getDialogPane().setContent(cascadeDeleteCheckBox);
+
+				Optional<ButtonType> result = alert.showAndWait();
+
+				if ((result.isPresent()) && (result.get() == ButtonType.OK))
+					controller.onDeleteEntitiesClicked(selected, cascadeDeleteCheckBox.isSelected());
 			}
 		});
 
@@ -101,11 +119,16 @@ public class MainStage extends Stage implements MainStageListener {
 				showCreateEntityDialog();
 			}
 		});
-		;
 
 		createChildEntityButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				showCreateChildEntityDialog();
+			}
+		});
+		
+		updateEntityButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				showUpdateEntityDialog();
 			}
 		});
 
@@ -428,14 +451,16 @@ public class MainStage extends Stage implements MainStageListener {
 			for (int i = 0; i < attributeKeyTextFields.size(); i++) {
 				String value = attributeValueTextFields.get(i).getText();
 				if (!attributeKeyTextFields.get(i).getText().isBlank()) {
-					attributes.put(attributeKeyTextFields.get(i).getText(), value.isBlank() ? null : value);
+					attributes.put(attributeKeyTextFields.get(i).getText(),
+							value.isBlank() || value.equals("null") ? null : value);
 				}
 			}
 			List<ChildEntityDataHolder> childEntities = new ArrayList<ChildEntityDataHolder>();
 			for (int i = 0; i < childNameTextFields.size(); i++) {
 				if (!childKeyTextFields.get(i).getText().isBlank() && !childNameTextFields.get(i).getText().isBlank()) {
 					childEntities.add(new ChildEntityDataHolder(childKeyTextFields.get(i).getText(),
-							childIdTextFields.size() > i ? childIdTextFields.get(i).getText() : "", childNameTextFields.get(i).getText()));
+							childIdTextFields.size() > i ? childIdTextFields.get(i).getText() : "",
+							childNameTextFields.get(i).getText()));
 				}
 			}
 
@@ -528,17 +553,144 @@ public class MainStage extends Stage implements MainStageListener {
 			for (int i = 0; i < attributeKeyTextFields.size(); i++) {
 				String value = attributeValueTextFields.get(i).getText();
 				if (!attributeKeyTextFields.get(i).getText().isBlank()) {
-					attributes.put(attributeKeyTextFields.get(i).getText(), value.isBlank() ? null : value);
+					attributes.put(attributeKeyTextFields.get(i).getText(),
+							value.isBlank() || value.equals("null") ? null : value);
 				}
 			}
 
 			try {
 				if (idTextField.getText().isBlank())
 					controller.onCreateChildEntityClicked(parent, keyForChildTextField.getText(),
-							nameTextField.getText(), attributes, null);
+							nameTextField.getText(), attributes.isEmpty() ? null : attributes);
 				else
 					controller.onCreateChildEntityClicked(parent, keyForChildTextField.getText(), idTextField.getText(),
-							nameTextField.getText(), attributes, null);
+							nameTextField.getText(), attributes.isEmpty() ? null : attributes);
+			} catch (Exception e) {
+				showErrorAlert("Error creating child entity");
+			}
+		}
+	}
+
+	private void showUpdateEntityDialog() {
+		final Alert alert = new Alert(AlertType.INFORMATION);
+		alert.getDialogPane().setMaxHeight(600);
+		alert.getDialogPane().setMinWidth(450);
+		alert.setTitle("Update entity");
+		alert.setHeaderText("Update selected Entity");
+		Entity selected = entityTableView.getSelectionModel().getSelectedItem();
+		ScrollPane scrollPane = new ScrollPane();
+		final VBox content = new VBox(15);
+		scrollPane.setContent(content);
+		Label nameLabel = new Label("Name:");
+		HBox rowOne = new HBox(10);
+		TextField nameTextField = new TextField();
+		nameTextField.setText(selected.getName());
+
+		HBox headerBox = new HBox(15);
+		headerBox.getChildren().add(new Label("Selected Entity Id: " + selected.getId()));
+		content.getChildren().add(headerBox);
+		rowOne.getChildren().add(nameLabel);
+		rowOne.getChildren().add(nameTextField);
+		final VBox attributeContent = new VBox(15);
+		content.getChildren().add(rowOne);
+
+		Button newAttributeButton = new Button("New attribute");
+		
+
+		final List<TextField> attributeKeyTextFields = new ArrayList<TextField>();
+		final List<TextField> attributeValueTextFields = new ArrayList<TextField>();
+
+		if (selected.getAttributes() != null) {
+			for (Map.Entry<String, Object> entry : selected.getAttributes().entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
+
+				HBox newRow = new HBox(10);
+				TextField keyField = new TextField(key);
+				attributeKeyTextFields.add(keyField);
+				TextField valueField = new TextField(value != null ? value.toString() : "");
+				newRow.getChildren().add(new Label("Key:"));
+				newRow.getChildren().add(keyField);
+				attributeValueTextFields.add(valueField);
+				newRow.getChildren().add(new Label("Value:"));
+				newRow.getChildren().add(valueField);
+				attributeContent.getChildren().add(newRow);
+			}
+			alert.getDialogPane().getScene().getWindow().sizeToScene();
+		}
+
+		newAttributeButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				HBox newRow = new HBox(10);
+				newRow.getChildren().add(new Label("Key:"));
+				TextField keyField = new TextField();
+				attributeKeyTextFields.add(keyField);
+				newRow.getChildren().add(keyField);
+				TextField valueField = new TextField();
+				attributeValueTextFields.add(valueField);
+				newRow.getChildren().add(new Label("Value:"));
+				newRow.getChildren().add(valueField);
+				attributeContent.getChildren().add(newRow);
+
+				alert.getDialogPane().getScene().getWindow().sizeToScene();
+			}
+		});
+		
+		final VBox childrenContent = new VBox(15);
+		final List<Integer> deletedChildrenIds = new ArrayList<Integer>();
+		
+		if (selected.getChildren() != null) {
+			for (final Entity child : selected.getChildren().values()) {
+				final HBox row = new HBox(15);
+				String key = "";
+				for (String k : selected.getChildren().keySet())
+					if (selected.getChildren().get(k).equals(child))
+						key = k;
+				
+				if (key.isBlank())
+					continue;
+				
+				final Label childKeyLabel = new Label("Child key: " + key);
+				final Button deleteButton = new Button("Delete child");
+				deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+					public void handle(ActionEvent event) {
+						childrenContent.getChildren().remove(row);
+						deletedChildrenIds.add(child.getId());
+						alert.getDialogPane().getScene().getWindow().sizeToScene();
+					}
+				});
+				
+				row.getChildren().add(childKeyLabel);
+				row.getChildren().add(deleteButton);
+				childrenContent.getChildren().add(row);
+			}
+			alert.getDialogPane().getScene().getWindow().sizeToScene();
+		}
+		
+		content.getChildren().add(new Label("Attributes:"));
+		content.getChildren().add(newAttributeButton);
+		content.getChildren().add(attributeContent);
+		content.getChildren().add(new Separator());
+		content.getChildren().add(new Label("Children:"));
+		content.getChildren().add(childrenContent);
+
+		alert.getDialogPane().setContent(scrollPane);
+
+		Optional<ButtonType> result = alert.showAndWait();
+
+		if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
+			Map<String, Object> attributes = new HashMap<String, Object>();
+			for (int i = 0; i < attributeKeyTextFields.size(); i++) {
+				String value = attributeValueTextFields.get(i).getText();
+				if (!attributeKeyTextFields.get(i).getText().isBlank()) {
+					attributes.put(attributeKeyTextFields.get(i).getText(),
+							value.isBlank() || value.equals("null") ? null : value);
+				}
+			}
+
+			try {
+				controller.onUpdateEntityClicked(selected, nameTextField.getText(),
+						attributes.isEmpty() ? null : attributes, deletedChildrenIds);
 			} catch (Exception e) {
 				showErrorAlert("Error creating child entity");
 			}

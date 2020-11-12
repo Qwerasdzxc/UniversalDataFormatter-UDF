@@ -3,8 +3,11 @@ package formatter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import formatter.data_integrity.IdValidator;
 import formatter.exceptions.IllegalIdentifierException;
@@ -41,22 +44,82 @@ class EntityPersister {
 			List<Entity> children = new ArrayList<Entity>();
 
 			for (Entity entity : entities) {
-				if (entity.getChildren() == null)
+				if (entity.getId() != entityToDelete.getId() || entity.getChildren() == null)
 					continue;
 
-				children.addAll(entity.getChildren().values());
+				for (Entity child : entity.getChildren().values())
+					children.add(child);
 			}
 			entities.addAll(children);
 		}
 
+		// Remove parent references to this entity
 		for (Entity entity : entities) {
 			if (entity.getChildren() != null && entity.getChildren().containsValue(entityToDelete)) {
 				entity.getChildren().values().remove(entityToDelete);
+				
+				if (entity.getChildren().values().isEmpty())
+					entity.setChildren(null);
+				
 				break;
 			}
 		}
 
 		entities.remove(entityToDelete);
+
+		try {
+			saveAll(entities);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * <p>Deletes the given {@link formatter.models.Entity} from storage</p>
+	 * @param entitiesToDelete 	entities for deletion
+	 * @param cascade	when cascade is active, all Entity's children will be deleted too
+	 * @return success	whether the operation succeeded
+	 */
+	public boolean deleteEntities(List<Entity> entitiesToDelete, boolean cascade) {
+		List<Entity> entities = getAllEntities();
+		List<Entity> children = new ArrayList<Entity>();
+		
+		// Move children to the root level
+		if (!cascade) {
+			for (Entity entity : entities) {
+				for (Entity forDelete : entitiesToDelete) {
+					if (entity.getId() != forDelete.getId() || entity.getChildren() == null)
+						continue;
+		
+					for (Entity child : entity.getChildren().values())
+						children.add(child);
+				}
+			}
+			entities.addAll(children);
+		}
+		
+		// Removes child entities
+		for (Entity entity : entities) {
+			for (Entity forDelete : entitiesToDelete) {
+				if (entity.getChildren() != null && entity.getChildren().containsValue(forDelete)) {
+					entity.getChildren().values().remove(forDelete);
+					
+					if (entity.getChildren().values().isEmpty())
+						entity.setChildren(null);
+				}
+			}
+		}
+		
+		// Remove parent entities
+		Iterator<Entity> iterator = entities.iterator();
+		while (iterator.hasNext()) {
+			Entity entity = iterator.next();
+			
+			if (entitiesToDelete.contains(entity))
+				iterator.remove();
+		}
 
 		try {
 			saveAll(entities);
@@ -125,15 +188,36 @@ class EntityPersister {
 	
 	/**
 	 * <p>Updates an existing {@link formatter.models.Entity}</p>
-	 * @param entity	updated entity instance
-	 * @throws Exception	error occurred during creation
+	 * @param entity			updated entity instance
+	 * @param addingChildren	new children have been added and id validity must be done	
+	 * @throws Exception		error occurred during creation
 	 */
-	public void updateEntity(Entity entity) throws Exception {
+	public void updateEntity(Entity entity, boolean addingChildren) throws Exception {
 		List<Entity> entities = getAllEntities();
 		int indexToUpdate = 0;
 		for (int i = 0; i < entities.size(); i++) {
-			if (entities.get(i).getId() == entity.getId())
+			if (entities.get(i).getId() == entity.getId()) {
+				if (addingChildren && entity.getChildren() != null) {
+					if (formatter.isAutoIncrementEnabled()) {
+						Collection<Entity> childrenEntities = entity.getChildren().values();
+						int lastGeneratedId = generateId();
+						for (Entity child : childrenEntities) {
+							child.setId(lastGeneratedId);
+							lastGeneratedId ++;
+						}
+					} else {
+						Collection<Entity> childrenEntities = entity.getChildren().values();
+						List<Integer> newIdsForChildren = new ArrayList<Integer>();
+						for (Entity child : childrenEntities) {
+							if (newIdsForChildren.contains(child.getId()) || !verifyIdAvailable(child.getId()))
+								throw new IllegalIdentifierException();
+							else
+								newIdsForChildren.add(child.getId());
+						}
+					}
+				}
 				indexToUpdate = i;
+			}
 		}
 		
 		entities.set(indexToUpdate, entity);

@@ -39,6 +39,16 @@ public abstract class DataFormatter {
 	public boolean deleteEntity(Entity entityToDelete, boolean cascade) {
 		return persister.deleteEntity(entityToDelete, cascade);
 	}
+	
+	/**
+	 * <p>Deletes the given {@link formatter.models.Entity} from storage</p>
+	 * @param entitiesToDelete 	entities for deletion
+	 * @param cascade	when cascade is active, all Entity's children will be deleted too
+	 * @return success	whether the operation succeeded
+	 */
+	public boolean deleteEntities(List<Entity> entitiesToDelete, boolean cascade) {
+		return persister.deleteEntities(entitiesToDelete, cascade);
+	}
 
 	/**
 	 * <p>Creates an {@link formatter.models.Entity} from parameters and auto-generates unique identifier</p>
@@ -99,8 +109,8 @@ public abstract class DataFormatter {
 	 * @param entity	updated entity instance
 	 * @throws Exception	error occurred during creation
 	 */
-	public void updateEntity(Entity entity) throws Exception {
-		persister.updateEntity(entity);
+	public void updateEntity(Entity entity, boolean addingChildren) throws Exception {
+		persister.updateEntity(entity, addingChildren);
 	}
 
 	/**

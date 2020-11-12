@@ -64,15 +64,16 @@ public class MainStageController {
 		Map<String, Entity> children = new HashMap<String, Entity>();
 		for (ChildEntityDataHolder child : childEntities)
 			children.put(child.getChildKey(), new Entity(child.getName(), null, null));
-		
+
 		formatter.createEntity(name, attributes, children);
 
 		refresh();
 	}
 
 	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String id, String name,
-			Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
-		Entity child = formatter.createEntity(id, name, attributes, children);
+			Map<String, Object> attributes) throws Exception {
+		Entity child = new Entity(name, attributes, null);
+
 		if (parent.getChildren() == null)
 			parent.setChildren(new HashMap<String, Entity>());
 
@@ -80,14 +81,15 @@ public class MainStageController {
 			throw new Exception();
 
 		parent.getChildren().put(keyForChild, child);
-		formatter.updateEntity(parent);
+		formatter.updateEntity(parent, true);
 
 		refresh();
 	}
 
 	public void onCreateChildEntityClicked(Entity parent, String keyForChild, String name,
-			Map<String, Object> attributes, Map<String, Entity> children) throws Exception {
-		Entity child = formatter.createEntity(name, attributes, children);
+			Map<String, Object> attributes) throws Exception {
+		Entity child = new Entity(name, attributes, null);
+
 		if (parent.getChildren() == null)
 			parent.setChildren(new HashMap<String, Entity>());
 
@@ -95,37 +97,60 @@ public class MainStageController {
 			throw new Exception();
 
 		parent.getChildren().put(keyForChild, child);
-		formatter.updateEntity(parent);
+		formatter.updateEntity(parent, true);
 
 		refresh();
 	}
 
-	public void onUpdateEntityClicked() {
+	public void onUpdateEntityClicked(Entity toUpdate, String name, Map<String, Object> attributes,
+			List<Integer> childEntityIdsToDelete) throws Exception {
+		if (!childEntityIdsToDelete.isEmpty()) {
+			List<String> keysToDelete = new ArrayList<String>();
+			for (String childKey : toUpdate.getChildren().keySet()) {
+				if (childEntityIdsToDelete.contains(toUpdate.getChildren().get(childKey).getId()))
+					keysToDelete.add(childKey);
+			}
+			
+			for (String keyToDelete : keysToDelete)
+				toUpdate.getChildren().remove(keyToDelete);
+			
+			if (toUpdate.getChildren().isEmpty())
+				toUpdate.setChildren(null);
+		}
+		toUpdate.setName(name);
+		toUpdate.setAttributes(attributes);
 
-	}
+		formatter.updateEntity(toUpdate, false);
 
-	public void deleteEntity(Entity entity, boolean cascade) {
-		formatter.deleteEntity(entity, cascade);
 		onSearchQueryChanged();
 	}
 
-	public void onDeleteEntitiesClicked() {
+	public void onDeleteEntityClicked(Entity entity, boolean cascade) {
+		formatter.deleteEntity(entity, cascade);
 
+		onSearchQueryChanged();
+	}
+
+	public void onDeleteEntitiesClicked(List<Entity> entities, boolean cascade) {
+		formatter.deleteEntities(entities, cascade);
+
+		onSearchQueryChanged();
 	}
 
 	public void onTableSelectionChanged() {
 		if (view.getSelectedEntities().size() > 1)
 			enableButtonsForMultipleSelection();
-		else {
+		else if (!view.getSelectedEntities().isEmpty()) {
 			Entity selected = view.getSelectedEntities().get(0);
 			List<Entity> entities = formatter.getAllEntities();
 			boolean isAChild = false;
 			for (Entity entity : entities)
 				if (entity.getChildren() != null && entity.getChildren().values().contains(selected))
 					isAChild = true;
-			
+
 			enableButtonsForSingleSelection(!isAChild);
-		}
+		} else
+			enableButtonsForNoSelection();
 	}
 
 	public void onSearchQueryChanged() {
