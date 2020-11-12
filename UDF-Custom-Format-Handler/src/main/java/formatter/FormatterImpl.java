@@ -75,7 +75,7 @@ public class FormatterImpl extends DataFormatter {
 	public List<Entity> read(File file) throws Exception {
 		List<Entity> entities = new ArrayList<Entity>();
 		try {
-			Scanner myReader = new Scanner(file);
+			Scanner scanner = new Scanner(file);
 			Entity ent = null;
 			String key = null;
 			Entity entForChild = null;
@@ -83,8 +83,8 @@ public class FormatterImpl extends DataFormatter {
 			Map<String, Object> attributes = new HashMap<String, Object>();
 			Map<String, Object> attributesForChild = new HashMap<String, Object>();
 
-			while (myReader.hasNextLine()) {
-				String data = myReader.nextLine();
+			while (scanner.hasNextLine()) {
+				String data = scanner.nextLine();
 				if (data.contains("----------")) {
 					if (ent != null) {
 						if (attributes.isEmpty()) {
@@ -214,7 +214,7 @@ public class FormatterImpl extends DataFormatter {
 					continue;
 				}
 			}
-			myReader.close();
+			scanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

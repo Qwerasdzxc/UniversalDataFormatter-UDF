@@ -3,11 +3,9 @@ package formatter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import formatter.data_integrity.IdValidator;
 import formatter.exceptions.IllegalIdentifierException;
@@ -22,12 +20,18 @@ class EntityPersister {
 	 * Active {@link formatter.DataFormatter}
 	 */
 	private DataFormatter formatter;
+	
+	/**
+	 * Configuration for {@link formatter.DataFormatter}
+	 */
+	private UDFConfigurator configurator;
 
 	/**
 	 * Main constructor for initialization
 	 */
-	public EntityPersister(DataFormatter formatter) {
+	public EntityPersister(DataFormatter formatter, UDFConfigurator configurator) {
 		this.formatter = formatter;
+		this.configurator = configurator;
 	}
 
 	/**
@@ -230,13 +234,21 @@ class EntityPersister {
 	 */
 	public List<Entity> getAllEntities() {
 		List<Entity> entities = new ArrayList<Entity>();
-		String savePath = UDFConfigurator.getInstance().getSavePath();
+		String savePath = configurator.getStoragePath();
 		String[] files = new File(savePath).list();
+		int ignoreFileNumber = 0;
+		for (String file : files) {
+			if (file.contains(".DS_Store"))
+				ignoreFileNumber ++;
+			if (file.contains("application.properties"))
+				ignoreFileNumber ++;
+		}
 		
 		if (files == null)
 			return entities;
 		
-		int fileCount = files.length;
+		// Ignore properties file
+		int fileCount = files.length - ignoreFileNumber;
 
 		for (int i = 0; i < fileCount; i++) {
 			try {
@@ -271,11 +283,11 @@ class EntityPersister {
 		deleteAllEntityFiles();
 
 		int fileNumber = 1;
-		int entityLimitPerFile = UDFConfigurator.getInstance().getEntityLimitPerFile();
+		int entityLimitPerFile = configurator.getEntityLimitPerFile();
 		for (int i = 0; i < entities.size(); i += entityLimitPerFile) {
 			int end = i + entityLimitPerFile;
 			formatter.save(entities.subList(i, end > entities.size() ? entities.size() : end),
-					new File(UDFConfigurator.getInstance().getSavePath(),
+					new File(configurator.getStoragePath(),
 							"entities" + fileNumber + formatter.getDataFormatExtension()));
 
 			fileNumber++;
@@ -283,9 +295,10 @@ class EntityPersister {
 	}
 
 	private void deleteAllEntityFiles() {
-		File saveDirectory = new File(UDFConfigurator.getInstance().getSavePath());
-		for (File file : saveDirectory.listFiles())
-			if (!file.isDirectory())
+		File saveDirectory = new File(configurator.getStoragePath());
+		for (File file : saveDirectory.listFiles()) {
+			if (!file.getName().equals("application.properties"))
 				file.delete();
+		}
 	}
 }

@@ -11,7 +11,12 @@ import formatter.models.Entity;
 * Abstract data formatter which handles all operations on {@link formatter.models.Entity}s
 */
 public abstract class DataFormatter {
-
+	
+	/**
+	 * Configuration for {@link formatter.DataFormatter}
+	 */
+	private UDFConfigurator configurator;
+	
 	/**
 	 * Finder for {@link formatter.models.Entity} searching
 	 */
@@ -26,8 +31,9 @@ public abstract class DataFormatter {
 	 * Main constructor for initialization
 	 */
 	public DataFormatter() {
+		this.configurator = new UDFConfigurator(this);
 		this.finder = new EntityFinder(this);
-		this.persister = new EntityPersister(this);
+		this.persister = new EntityPersister(this, configurator);
 	}
 
 	/**
@@ -136,7 +142,7 @@ public abstract class DataFormatter {
 	 * @return entities		filtered entities from storage
 	 */
 	public int getEntityLimitPerFile() {
-		return UDFConfigurator.getInstance().getEntityLimitPerFile();
+		return configurator.getEntityLimitPerFile();
 	}
 
 	/**
@@ -144,7 +150,24 @@ public abstract class DataFormatter {
 	 * @param entityLimitPerFile	maximum number of entities per file
 	 */
 	public void setEntityLimitPerFile(int entityLimitPerFile) {
-		UDFConfigurator.getInstance().setEntityLimitPerFile(entityLimitPerFile);
+		configurator.setEntityLimitPerFile(entityLimitPerFile);
+	}
+	
+	/**
+	 * <p>Returns storage location of stored {@link formatter.models.Entity}s</p>
+	 * @return storagePath	storage location
+	 */
+	public String getStoragePath() {
+		return configurator.getStoragePath();
+	}
+	
+	/**
+	 * <p>Sets storage location of stored {@link formatter.models.Entity}s</p>
+	 * @param storagePath	storage location
+	 * @throws Exception	illegal storage location
+	 */
+	public void setStoragePath(String storagePath) throws Exception {
+		configurator.setStoragePath(storagePath);
 	}
 
 	/**
@@ -162,7 +185,15 @@ public abstract class DataFormatter {
 	 * @return autoIncrementEnabled	is auto-increment enabled
 	 */
 	public boolean isAutoIncrementEnabled() {
-		return UDFConfigurator.getInstance().isAutoIncrementIds();
+		return configurator.isAutoIncrementIds();
+	}
+	
+	/**
+	 * <p>Sets storage location of stored {@link formatter.models.Entity}s</p>
+	 * @param enabled	enable auto increment system
+	 */
+	public void setAutoIncrementEnabled(boolean enabled) {
+		configurator.setAutoIncrementIds(enabled);
 	}
 
 	/**

@@ -1,17 +1,7 @@
 ----------
 #id: 1
-#name: Luka
+#name: Child
 @attributes:
-	#boolean: true
-	#year: 21
-	#name: Luka
-@children:
-	-child1:
-		#id: 3
-		#name: Luka
-		@attributes:
-			#boolean: true
-			#year: 21
-			#name: Luka
-		@children: null
+	#a: b
+@children: null
 ----------

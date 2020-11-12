@@ -1,6 +1,6 @@
 package app;
 
-import app.views.MainStage;
+import app.views.SetupStage;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -12,7 +12,7 @@ public class UDFApplication extends Application {
 
 	@Override
     public void start(Stage primaryStage) {
-		MainStage mainStage = new MainStage();
-		mainStage.show();
+		SetupStage setupStage = new SetupStage();
+		setupStage.show();
     }
 }

@@ -68,7 +68,14 @@ public class MainStage extends Stage implements MainStageListener {
 		controller = new MainStageController(this);
 
 		setTitle("Universal Data Formatter - UDF");
-
+		
+		Scene scene = new Scene(setupView());
+		setMinWidth(1200);
+		setMinHeight(800);
+		setScene(scene);
+	}
+	
+	private BorderPane setupView() {
 		entityTableView.getColumns().addAll(cols);
 		entityTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		entityTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Entity>() {
@@ -339,11 +346,8 @@ public class MainStage extends Stage implements MainStageListener {
 
 		searchTitlePane.setContent(topBar);
 		borderPane.setTop(searchTitlePane);
-
-		Scene scene = new Scene(borderPane);
-		setMinWidth(1200);
-		setMinHeight(800);
-		setScene(scene);
+		
+		return borderPane;
 	}
 
 	private void showErrorAlert(String message) {
