@@ -26,6 +26,8 @@ It's written in Java and has an example JavaFX GUI application for doing CRUD op
 - **YAML**
 - **CUSTOM** (custom data format implemented for demonstration purposes)
 
+Every data format implementation is a runtime dependency and can be switched without re-compiling anything.
+
 ---
 
 ## Setup
